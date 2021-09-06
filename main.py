@@ -2,14 +2,13 @@ from flask import Flask, render_template, send_file
 from notion_interface import read_database, create_calendar
 import os
 
-
 # TODO Flask app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 
 # TODO token, db_id, endpoint url, headers
-token = 'secret_JRgFnJ4LBEOcvbomuXcAr3pkkDVHtZkdJQm28TGFgOB'
-database_id = '8f72df345a0f4906bd385244040f12bc'
+token = os.environ.get("NOTION_TOKEN")
+database_id = os.environ.get("NOTION_DB_ID")
 get_url = 'https://api.notion.com/v1/databases/'
 
 
