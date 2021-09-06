@@ -5,11 +5,12 @@
     <title></title>
   </head>
   <body>
-    {% for project in projects %}
+    <h1>GECA Calendar downloader</h1>
+    <!-- {% for project in projects %}
     <p>
     <a href="{{ project.url }}">{{ project.name }}</a>
     </p>
-    {% endfor %}
+    {% endfor %} -->
     <p>
       <a href="{{ url_for('download_calendar', filename='geca_calendar.ics') }}">Download Calendar</a>
     </p>
