@@ -47,16 +47,21 @@ def create_calendar(data, save_to_json=False):
     project_list = []
     project_calendar = Calendar()
     for ev in data['results']:
-        project = Project(
-            event_id=ev['id'],
-            name=ev['properties']['Name']['title'][0]['text']['content'],
-            date_start=ev['properties']['Date']['date']['start'],
-            date_end=ev['properties']['Date']['date']['end'],
-        )
-        project.url = ev['url']
-        project_list.append(project)
-        project.save_to_calendar(project_calendar, filename='geca_calendar.ics')
-        # print(project_calendar.events)
+        try:
+            project = Project(
+                event_id=ev['id'],
+                name=ev['properties']['Name']['title'][0]['text']['content'],
+                date_start=ev['properties']['Date']['date']['start'],
+                date_end=ev['properties']['Date']['date']['end'],
+            )
+            project.url = ev['url']
+            project_list.append(project)
+            project.save_to_calendar(project_calendar, filename='geca_calendar.ics')
+            # print(project_calendar.events)
+            # print(project.name)
+        except TypeError:
+            # print('Caught exception')
+            pass
         if save_to_json:
             save_json(data, name='geca_calendar.json')
     return project_list
