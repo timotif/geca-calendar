@@ -23,6 +23,8 @@ def get_events():
 
 @app.route('/download/<path:filename>')
 def download_calendar(filename):
+    data = read_database(database_id, token)
+    projects = create_calendar(data)
     return send_file(filename)
 
 
