@@ -41,9 +41,9 @@ class Project:
             my_file.writelines(c)
 
 
-def create_calendar(data, save_to_json=False):
-    """Given a json it iterates through the results, creates instances of the Project class, saves them as events in a
-    ics calendar and returns a list of Projects. Optionally it saves the data in a json file"""
+def create_calendar(data, filename='geca_calendar.ics' , save_to_json=False):
+    """Given a json and a filename it iterates through the results, creates instances of the Project class, saves them as events in a
+    ics calendar and returns a list of Projects. Default filename is geca_calendar.ics. Optionally it saves the data in a json file"""
     project_list = []
     project_calendar = Calendar()
     for ev in data['results']:
@@ -55,7 +55,7 @@ def create_calendar(data, save_to_json=False):
         )
         project.url = ev['url']
         project_list.append(project)
-        project.save_to_calendar(project_calendar, filename='geca_calendar.ics')
+        project.save_to_calendar(project_calendar, filename=filename)
         # print(project_calendar.events)
         if save_to_json:
             save_json(data, name='geca_calendar.json')
