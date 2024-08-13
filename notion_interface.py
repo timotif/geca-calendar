@@ -1,7 +1,7 @@
 import requests
 from ics import Calendar, Event
 import json
-
+from logging_config import logger
 
 def read_database(database_id, token):
     """Given a database_id and the secret token it returns a json of the database"""
@@ -13,9 +13,8 @@ def read_database(database_id, token):
     read_url = f"https://api.notion.com/v1/databases/{database_id}/query"
     response = requests.request("POST", read_url, headers=headers)
     data = response.json()
-    print(response.status_code)
+    logger.info(f"Status code: {response.status_code}")
     return data
-
 
 class Project:
     """"""
@@ -57,8 +56,9 @@ def create_calendar(data, filename='geca_calendar.ics' , save_to_json=False):
         project_list.append(project)
         project.save_to_calendar(project_calendar, filename=filename)
         # print(project_calendar.events)
-        if save_to_json:
-            save_json(data, name='geca_calendar.json')
+    if save_to_json:
+        logger.info("Saving json")
+        save_json(data, name='geca_calendar.json')
     return project_list
 
 
