@@ -10,6 +10,9 @@ build:
 run:
 	docker run -d --env-file $(ENV_FILE) -p $(PORT):$(PORT) --name $(NAME) $(IMG)
 
+stop:
+	docker stop $(NAME)
+
 clean:
 	docker stop $(NAME)
 	docker rm $(NAME)

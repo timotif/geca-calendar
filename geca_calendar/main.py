@@ -20,17 +20,18 @@ UPDATE_EVERY = datetime.timedelta(hours=6)
 
 @app.route('/update')
 def update_calendar():
+    global LAST_UPDATE
     data = read_database(database_id, TOKEN)
     projects = create_calendar(data, FILENAME)
-    LAST_UPDATE = datetime.now()
+    LAST_UPDATE = datetime.datetime.now()
     return send_file(FILENAME)
 
 @app.route('/')
 def get_events():
     if LAST_UPDATE is None or \
-        datetime.now() - LAST_UPDATE > UPDATE_EVERY or\
-        not os.path(FILENAME).exists():
-        update_calendar()
+        datetime.datetime.now() - LAST_UPDATE > UPDATE_EVERY or\
+        not os.path.exists(FILENAME):
+            update_calendar()
     return send_file(FILENAME)
 
 @app.route('/download/<path:filename>')

@@ -156,3 +156,4 @@ __pycache__
 .vscode
 *.json
 tokens
+test*

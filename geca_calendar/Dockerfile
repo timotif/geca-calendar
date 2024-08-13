@@ -1,7 +1,6 @@
 FROM python:3.11.9-slim
 
 RUN mkdir /app
-
 COPY requirements.txt /app/requirements.txt
 COPY . /app/
 
