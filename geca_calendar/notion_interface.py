@@ -5,6 +5,7 @@ from logging_config import logger
 
 def read_database(database_id, token):
     """Given a database_id and the secret token it returns a json of the database"""
+    logger.info("Fetching data")
     headers = {
         'Authorization': 'Bearer ' + token,
         'Notion-Version': '2021-08-16',
@@ -57,11 +58,11 @@ def create_calendar(data, filename='geca_calendar.ics' , save_to_json=False):
         project.save_to_calendar(project_calendar, filename=filename)
         # print(project_calendar.events)
     if save_to_json:
-        logger.info("Saving json")
         save_json(data, name='geca_calendar.json')
     return project_list
 
 
 def save_json(data, path='./', name='db.json'):
+    logger.info("Saving json")
     with open(path + name, 'w', encoding='utf8') as f:
         json.dump(data, f, ensure_ascii=False)
