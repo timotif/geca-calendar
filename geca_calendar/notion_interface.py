@@ -56,7 +56,8 @@ def fetch_seating_order(seating_blocks: dict, data: json) -> str:
             elif block['type'] == 'paragraph' and len(block['paragraph']['text']) != 0:
                 seating += block['paragraph']['text'][0]['plain_text'] + "\n" # Section list
         seating_parsed += f"{key}\n{seating}\n"
-
+    return seating_parsed
+    
 def get_seating_positions(page_id: str, token: str) -> str:
     # Checking a project page
     endpoint = f"https://api.notion.com/v1/blocks/{page_id}/children"
