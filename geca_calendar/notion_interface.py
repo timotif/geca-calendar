@@ -7,7 +7,7 @@ import os
 TOKEN = os.getenv('NOTION_TOKEN')
 HEADERS = {
     'Authorization': 'Bearer ' + TOKEN,
-    'Notion-Version': '2021-08-16',
+    'Notion-Version': '2022-06-28',
     'Content-Type': 'application/json',
 }
 
