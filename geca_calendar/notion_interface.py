@@ -12,7 +12,7 @@ HEADERS = {
     'Notion-Version': '2022-06-28',
     'Content-Type': 'application/json',
 }
-q
+
 def read_database(database_id, token):
     """Given a database_id and the secret token it returns a json of the database"""
     logger.info("Fetching data")
