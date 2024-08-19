@@ -1,8 +1,10 @@
 import requests
 from ics import Calendar, Event
 import json
-from logging_config import logger
+import logging
 import os
+
+logger = logging.getLogger("geca_calendar")
 
 TOKEN = os.getenv('NOTION_TOKEN')
 HEADERS = {
@@ -10,7 +12,7 @@ HEADERS = {
     'Notion-Version': '2022-06-28',
     'Content-Type': 'application/json',
 }
-
+q
 def read_database(database_id, token):
     """Given a database_id and the secret token it returns a json of the database"""
     logger.info("Fetching data")
@@ -25,14 +27,16 @@ def fetch_seating_blocks(data: json) -> dict:
     seating_blocks = {}
     for i in range(len(data['results'])):
         if data['results'][i]['type'] == 'paragraph' and \
-            len(data['results'][i]['paragraph']['text']) != 0 and \
-            data['results'][i]['paragraph']['text'][0]['plain_text'].lower() == "seating positions":
+            len(data['results'][i]['paragraph']['rich_text']) != 0 and \
+            data['results'][i]['paragraph']['rich_text'][0]['plain_text'].lower() == "seating positions":
             # Seating is set up
+            logger.debug("Seating positions found")
             i += 1
             # Going until the divider to fetch page ids
             while (i < len(data['results']) and data['results'][i]['type'] != 'divider'):
                 key = data['results'][i]['child_page']['title']
                 value = data['results'][i]['id']
+                logger.debug(f"Adding {key} with id {value}")
                 seating_blocks[key] = value
                 i += 1
             break
@@ -52,14 +56,15 @@ def fetch_seating_order(seating_blocks: dict, data: json) -> str:
             block = data['results'][i]
             type = block['type']
             if type == 'heading_3': # Section name
-                seating += block[type]['text'][0]['plain_text'] + ":\n"
-            elif block['type'] == 'paragraph' and len(block['paragraph']['text']) != 0:
-                seating += block['paragraph']['text'][0]['plain_text'] + "\n" # Section list
+                seating += block[type]['rich_text'][0]['plain_text'] + ":\n"
+            elif block['type'] == 'paragraph' and len(block['paragraph']['rich_text']) != 0:
+                seating += block['paragraph']['rich_text'][0]['plain_text'] + "\n" # Section list
         seating_parsed += f"{key}\n{seating}\n"
     return seating_parsed
     
 def get_seating_positions(page_id: str, token: str) -> str:
     # Checking a project page
+    logger.debug(f"Fetching seating positions for page {page_id}")
     endpoint = f"https://api.notion.com/v1/blocks/{page_id}/children"
     response = requests.request("GET", endpoint, headers=HEADERS)
     data = response.json()
@@ -108,7 +113,7 @@ def create_calendar(data, filename='geca_calendar.ics' , save_to_json=False):
         try:
             project.seating = get_seating_positions(ev['id'], os.getenv('NOTION_TOKEN'))
         except Exception as e:
-            logger.error(f"Error fetching seating positions: {e}")
+            logger.error(f"Error fetching seating positions: {type(e).__name__} {e}")
         project.url = ev['url']
         project_list.append(project)
         project.save_to_calendar(project_calendar, filename=filename)

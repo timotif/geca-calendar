@@ -18,6 +18,10 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 file_handler.setFormatter(formatter)
 stream_handler.setFormatter(formatter)
 
+# Dynamically setting logger level
+logger_level = logging.DEBUG if os.getenv('DEBUG') else logging.INFO
+logger.setLevel(logger_level)
+
 # Add handlers to the logger
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)

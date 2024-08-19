@@ -1,12 +1,17 @@
-from flask import Flask, send_file
-from notion_interface import read_database, create_calendar, TOKEN
-import datetime
 import os
 import dotenv
-from logging_config import logger
 
-if not os.getenv("SECRET_KEY") or not os.getenv("NOTION_TOKEN") or not os.getenv("NOTION_DB_ID"):
-	logger.debug("Environment loaded") if dotenv.load_dotenv("notion_2425.env") else logger.error("Environment not loaded")
+loaded_env = False
+if not os.getenv("SECRET_KEY") or not os.getenv("NOTION_DB_ID") or not os.getenv("NOTION_TOKEN"):
+	loaded_env = dotenv.load_dotenv(".env")
+
+from flask import Flask, send_file
+from logging_config import logger
+from notion_interface import read_database, create_calendar, TOKEN
+import datetime
+
+if loaded_env:
+	logger.debug("Environment variables loaded from .env file")
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
