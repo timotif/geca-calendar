@@ -1,0 +1,4 @@
+SECRET_KEY=		# Notion API key
+NOTION_TOKEN=	# Integration token
+NOTION_DB_ID=	# Database page
+DEBUG=			# [0 - 1]
