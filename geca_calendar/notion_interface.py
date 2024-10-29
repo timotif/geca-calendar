@@ -28,13 +28,20 @@ def fetch_seating_blocks(data: json) -> dict:
     for i in range(len(data['results'])):
         if data['results'][i]['type'] == 'paragraph' and \
             len(data['results'][i]['paragraph']['rich_text']) != 0 and \
-            data['results'][i]['paragraph']['rich_text'][0]['plain_text'].lower() == "seating positions":
+            (data['results'][i]['paragraph']['rich_text'][0]['plain_text'].lower() == "seating positions" or \
+            data['results'][i]['paragraph']['rich_text'][0]['plain_text'].lower() == "seating position"):
             # Seating is set up
             logger.debug("Seating positions found")
             i += 1
             # Going until the divider to fetch page ids
             while (i < len(data['results']) and data['results'][i]['type'] != 'divider'):
-                key = data['results'][i]['child_page']['title']
+                try:
+                    key = data['results'][i]['child_page']['title']
+                except KeyError as e:
+                    if e.args[0] == 'child_page':
+                        logger.debug("Empty block found")
+                        i += 1
+                        continue
                 value = data['results'][i]['id']
                 logger.debug(f"Adding {key} with id {value}")
                 seating_blocks[key] = value
