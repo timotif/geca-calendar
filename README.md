@@ -45,18 +45,6 @@ Retrieve the calendar id
    cd geca-calendar
    ```
 
-2. **Create a virtual environment**:
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate
-   ```
-
-3. **Install dependencies**:
-   ```bash
-   pip install --upgrade pip
-   pip install -r geca_calendar/requirements.txt
-   ```
-
 ## Usage
 ### Webapp Mode
 ```bash
@@ -69,11 +57,11 @@ The app will be available at http://localhost:8001 (can be changed in the Makefi
 - You can host the app on a server and expose the port 8001
 
 #### Subscribing to a Calendar
-*iCal*
-1. Click on **New Calendar** -> **Add subscribed calendar**
-2. Paste the calendar link and click **Subscribe**
+- *iCal*
+  1. Click on **New Calendar** -> **Add subscribed calendar**
+  2. Paste the calendar link and click **Subscribe**
 
-*Google and Android*
+- *Google and Android*
 For detailed instructions on adding a calendar to Google Calendar, refer to [this guide](https://www.ohmancorp.com/refhowto-androidaddinternetcalendar.asp).
 
 ### Stop the app 
