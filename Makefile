@@ -10,7 +10,7 @@ build:
 	docker build -t $(IMG) $(APP_PATH)
 
 run:
-	docker run -d --env-file $(ENV_FILE) -p $(PORT):$(PORT) -v /var/log/geca_calendar:/app/log --name $(NAME) $(IMG) 
+	docker run -d --rm --env-file $(ENV_FILE) -p $(PORT):$(PORT) -v /var/log/geca_calendar:/app/log --name $(NAME) $(IMG) 
 
 stop:
 	docker stop $(NAME)
