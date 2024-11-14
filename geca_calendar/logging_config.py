@@ -1,5 +1,5 @@
 import logging
-import os;
+import os
 
 LOG_DIR = './log'
 
@@ -19,7 +19,7 @@ file_handler.setFormatter(formatter)
 stream_handler.setFormatter(formatter)
 
 # Dynamically setting logger level
-logger_level = logging.DEBUG if os.getenv('DEBUG') else logging.INFO
+logger_level = logging.DEBUG if int(os.getenv('DEBUG')) else logging.INFO
 logger.setLevel(logger_level)
 
 # Add handlers to the logger
