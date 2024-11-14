@@ -19,7 +19,7 @@ file_handler.setFormatter(formatter)
 stream_handler.setFormatter(formatter)
 
 # Dynamically setting logger level
-logger_level = logging.DEBUG if int(os.getenv('DEBUG')) else logging.INFO
+logger_level = logging.DEBUG if os.getenv('DEBUG') == '1' else logging.INFO
 logger.setLevel(logger_level)
 
 # Add handlers to the logger

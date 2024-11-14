@@ -10,7 +10,7 @@ def main():
         logger.info("Environment loaded") if dotenv.load_dotenv(ENV_FILE) else logger.info("Environment not loaded")
     try:
         data = read_database(database_id=os.environ.get("NOTION_DB_ID"), token=os.environ.get("NOTION_TOKEN"))
-        create_calendar(data, save_to_json=True if int(os.getenv("DEBUG")) else False)
+        create_calendar(data, save_to_json=True if os.getenv("DEBUG") == '1' else False)
         logger.info("Calendar updated")
     except KeyboardInterrupt:
         logger.info("Exiting")
