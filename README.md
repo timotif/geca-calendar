@@ -14,7 +14,7 @@ This is a Python dockerized webapp that handles a subscription calendar for [Gen
 - Python 3.x
 - Notion API token
 - *(For local mode)* Virtual environment (venv)
-- .env file (see env_tutorial)
+- .env file (see env_template)
 
 ### Create Notion integration token
 - Settings and members
