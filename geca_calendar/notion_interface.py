@@ -121,19 +121,40 @@ def fetch_projects(data) -> list:
 		project_list.append(project)
 	return project_list
 
-def create_calendar(data, filename='geca_calendar.ics' , save_to_calendar=True, save_to_json=False) -> list:
+def create_calendar(project_list, filename='geca_calendar.ics' , save_to_calendar=True, save_to_json=False) -> list:
 	"""Given a json and a filename it iterates through the results, creates instances of the Project class, saves them as events in a
 	ics calendar and returns a list of Projects. Default filename is geca_calendar.ics. Optionally it saves the data in a json file"""
 	project_calendar = Calendar()
-	project_list = fetch_projects(data)
+	# project_list = fetch_projects(data)
 	if save_to_calendar:
 		for project in project_list:
 			project.save_to_calendar(project_calendar, filename=filename)
 	if save_to_json:
 		projects_json = [project.__dict__ for project in project_list]
 		save_json(projects_json, name='projects.json')
-	return project_list
+	# return project_list
 
+def find_project_by_id(project_id, projects):
+	"""Given a project_id and a list of projects it returns the project with the given id"""
+	for p in projects:
+		if project_id == p['id']:
+			return p
+	return None
+
+def create_custom_project_list(selected_project_ids, projects):
+	project_list = []
+	for id in selected_project_ids:
+		project_dict = find_project_by_id(id, projects)
+		project = Project(
+			event_id=project_dict['id'],
+			name=project_dict['name'],
+			date_start=project_dict['date_start'],
+			date_end=project_dict['date_end'],
+		)
+		project.seating = project_dict['seating']
+		project.url = project_dict['url']
+		project_list.append(project)
+	return project_list
 
 def save_json(data, path='./', name='db.json'):
 	logger.info("Saving json")
