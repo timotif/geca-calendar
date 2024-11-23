@@ -119,29 +119,30 @@ def fetch_projects(data) -> list:
 			logger.error(f"Error fetching seating positions: {type(e).__name__} {e}")
 		project.url = ev['url']
 		project_list.append(project)
+	project_list.sort(key=lambda x: x.date_start)
 	return project_list
 
-def create_calendar(project_list, filename='geca_calendar.ics' , save_to_calendar=True, save_to_json=False) -> list:
+def create_calendar(project_list: json, filename='geca_calendar.ics' , save_to_calendar=True, save_to_json=False) -> None:
 	"""Given a json and a filename it iterates through the results, creates instances of the Project class, saves them as events in a
 	ics calendar and returns a list of Projects. Default filename is geca_calendar.ics. Optionally it saves the data in a json file"""
 	project_calendar = Calendar()
-	# project_list = fetch_projects(data)
 	if save_to_calendar:
 		for project in project_list:
 			project.save_to_calendar(project_calendar, filename=filename)
 	if save_to_json:
 		projects_json = [project.__dict__ for project in project_list]
 		save_json(projects_json, name='projects.json')
-	# return project_list
 
-def find_project_by_id(project_id, projects):
+def find_project_by_id(project_id: str, projects: json) -> dict | None:
 	"""Given a project_id and a list of projects it returns the project with the given id"""
 	for p in projects:
+		print("Type of p: ", type(p))
 		if project_id == p['id']:
 			return p
 	return None
 
-def create_custom_project_list(selected_project_ids, projects):
+def create_custom_project_list(selected_project_ids: str, projects: json) -> list[Project]:
+	"""Given a list of project ids and a list of projects it returns a list of projects with the given ids"""
 	project_list = []
 	for id in selected_project_ids:
 		project_dict = find_project_by_id(id, projects)
