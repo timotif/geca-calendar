@@ -13,7 +13,7 @@ HEADERS = {
 	'Content-Type': 'application/json',
 }
 
-def read_database(database_id, token):
+def read_database(database_id):
 	"""Given a database_id and the secret token it returns a json of the database"""
 	logger.info("Fetching data")
 	read_url = f"https://api.notion.com/v1/databases/{database_id}/query"
@@ -81,13 +81,13 @@ def get_seating_positions(page_id: str, token: str) -> str:
 	
 class Project:
 	""""""
-	def __init__(self, event_id, name, date_start, date_end):
+	def __init__(self, event_id, name, date_start, date_end, url=None, seating=None):
 		self.name = name
 		self.date_start = date_start
 		self.date_end = date_end
 		self.id = event_id
-	url = str
-	seating = str
+		self.url = url
+		self.seating = seating
 
 	def save_to_calendar(self, calendar, filename='my.ics'):
 		"""The method saves the project on the given calendar as a new event with all_day property. Default filename
@@ -104,7 +104,7 @@ class Project:
 		with open(f'./{filename}', 'w') as my_file:
 			my_file.writelines(c)
 
-def fetch_projects(data) -> list:
+def fetch_projects(data) -> list[Project]:
 	project_list = []
 	for ev in data['results']:
 		project = Project(
@@ -118,6 +118,7 @@ def fetch_projects(data) -> list:
 		except Exception as e:
 			logger.error(f"Error fetching seating positions: {type(e).__name__} {e}")
 		project.url = ev['url']
+		# print(project.__dict__)
 		project_list.append(project)
 	project_list.sort(key=lambda x: x.date_start)
 	return project_list
@@ -161,3 +162,11 @@ def save_json(data, path='./', name='db.json'):
 	logger.info("Saving json")
 	with open(path + name, 'w', encoding='utf8') as f:
 		json.dump(data, f, ensure_ascii=False)
+
+def json_to_projects(data: json) -> list[Project]:
+	project_list = []
+	for project in data:
+		print(project)
+		p = Project(project['id'], project['name'], project['date_start'], project['date_end'], project['url'], project['seating'])
+		project_list.append(p)
+	return project_list
