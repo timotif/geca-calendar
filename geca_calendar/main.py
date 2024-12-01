@@ -65,18 +65,9 @@ def fetch_projects_api():
 def list_projects():
 	# GET method
 	if request.method == 'GET':
-		# global LAST_UPDATE
-		# if os.path.exists('projects.json') and LAST_UPDATE != None and datetime.datetime.now() - LAST_UPDATE < UPDATE_EVERY:
-		# 	with open('projects.json', 'r') as file:
-		# 		project_list = json.load(file)
-		# else:
-		# 	data = read_database(database_id)
-		# 	project_list = fetch_projects(data)
-		# 	create_calendar(project_list, save_to_calendar=False, save_to_json=True)
-		# 	LAST_UPDATE = datetime.datetime.now()
 		return render_template('projects.html')
 	# POST method
-	print(request.form.getlist('selected_projects')) # edit from index.html what is sent back to the backend
+	# print(request.form.getlist('selected_projects')) # edit from index.html what is sent back to the backend
 	filename = 'custom_calendar.ics'
 	selected_project_ids = request.form.getlist('selected_projects')
 	with open('projects.json', 'r') as file:

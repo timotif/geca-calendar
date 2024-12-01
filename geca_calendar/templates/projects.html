@@ -10,34 +10,47 @@
     <div class="container mt-5">
         <h1 class="mb-4">Project List</h1>
 		<div id="loader">Loading...</div>
-		<form action="/list" method="post">
-			<div id="projects"></div>
-			<button type="submit" class="btn btn-primary mt-4">Submit</button>
-		</form>
+		<div id="projects" style="display: none;">
+			<form action="/list" method="post" id="projects-form">
+				<ul id="projects-list" class="list-group">
+					<!-- List populated in JS -->
+				</ul>
+				<button type="submit" class="btn btn-primary mt-4 submit-list">Submit</button>
+			</form>
+		</div>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 	<script>
 		document.getElementById('loader').style.display = 'none';
-		// document.getElementById('btn').disabled = true;
 		document.addEventListener('DOMContentLoaded', async () => {
+			const btn = document.getElementsByClassName('submit-list').disabled = true;
 			document.getElementById('loader').style.display = 'block';
 			// Fetch projects
 			const response = await fetch('/fetch_projects');
 			const data = await response.json();
-			divProjectList = document.createElement('ul');
+			const projectsList = document.getElementById('projects-list');
+
 			for (const p of data) {
 				li = document.createElement('li');
 				li.className = "list-group-item d-flex justify-content-between align-items-center";
-				li.textContent = p.name;
-				divProjectList.appendChild(li);
+
+				checkbox = document.createElement('input');
+				checkbox.type = 'checkbox';
+				checkbox.name = 'selected_projects';
+				checkbox.value = p.id;
+				checkbox.className = 'form-check-input me-2';
+				
+				li.appendChild(checkbox);
+				li.appendChild(document.createTextNode(p.name));
+				projectsList.appendChild(li);
 			}
-			const projects = document.getElementById('projects');
-			projects.appendChild(divProjectList);
+			const projects = document.getElementById('projects-form');
+			projects.appendChild(projectsList);
 			document.getElementById('loader').style.display = 'none';
 			document.getElementById('projects').style.display = 'block';
-			document.getElementById('btn').disabled = false;
+			btn.disabled = false;
 		})
 	</script>
 </body>

@@ -137,7 +137,7 @@ def create_calendar(project_list: json, filename='geca_calendar.ics' , save_to_c
 def find_project_by_id(project_id: str, projects: json) -> dict | None:
 	"""Given a project_id and a list of projects it returns the project with the given id"""
 	for p in projects:
-		print("Type of p: ", type(p))
+		# print("Type of p: ", type(p))
 		if project_id == p['id']:
 			return p
 	return None
@@ -166,7 +166,7 @@ def save_json(data, path='./', name='db.json'):
 def json_to_projects(data: json) -> list[Project]:
 	project_list = []
 	for project in data:
-		print(project)
+		# print(project)
 		p = Project(project['id'], project['name'], project['date_start'], project['date_end'], project['url'], project['seating'])
 		project_list.append(p)
 	return project_list
