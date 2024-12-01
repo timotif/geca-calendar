@@ -10,7 +10,7 @@ if not os.getenv("SECRET_KEY") or not os.getenv("NOTION_DB_ID") or not os.getenv
 	else:
 		logger.debug("Environment variables loaded from .env file")
 
-from flask import Flask, send_file, render_template, request, jsonify
+from flask import Flask, send_file, render_template, request, jsonify 
 from notion_interface import read_database, fetch_projects, create_calendar, create_custom_project_list, json_to_projects
 import datetime
 import json
@@ -25,6 +25,14 @@ FILENAME = 'geca2425.ics'
 LAST_UPDATE = None
 LAST_UPDATE = datetime.datetime.now() # TODO: remove
 UPDATE_EVERY = datetime.timedelta(hours=6)
+
+@app.errorhandler(403)
+def authorization_required():
+	return "You're not authorized to get this file", 403
+
+@app.errorhandler(404)
+def page_not_found():
+	return "I couldn't find the requested resource", 404
 
 @app.route('/update')
 def update_calendar():
@@ -43,9 +51,14 @@ def get_events():
 			update_calendar()
 	return send_file(FILENAME)
 
-@app.route('/download/<path:filename>')
+@app.route('/<path:filename>')
 def download_calendar(filename):
-	return send_file(filename)
+	if filename[-4:] != ".ics":
+		return authorization_required()
+	try:
+		return send_file(filename)
+	except FileNotFoundError:
+		return page_not_found()
 
 @app.route('/fetch_projects')
 def fetch_projects_api():
@@ -67,14 +80,16 @@ def list_projects():
 	if request.method == 'GET':
 		return render_template('projects.html')
 	# POST method
-	# print(request.form.getlist('selected_projects')) # edit from index.html what is sent back to the backend
-	filename = 'custom_calendar.ics'
 	selected_project_ids = request.form.getlist('selected_projects')
 	with open('projects.json', 'r') as file:
 		projects = json.load(file)
+	# filename = 'custom_calendar.ics'
+	filename = f"{hex(hash(' '.join(selected_project_ids)))}.ics"[2:]
+	print(' '.join(selected_project_ids))
 	project_list = create_custom_project_list(selected_project_ids, projects)
 	create_calendar(project_list, filename=filename)
-	return send_file(filename)
+	return render_template("custom.html", filename=filename)
+	# return send_file(filename)
 
 if __name__ == "__main__":
 	app.run(host='0.0.0.0', port=8080, debug=True)

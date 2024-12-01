@@ -152,9 +152,9 @@ def create_custom_project_list(selected_project_ids: str, projects: json) -> lis
 			name=project_dict['name'],
 			date_start=project_dict['date_start'],
 			date_end=project_dict['date_end'],
+			url = project_dict['url'],
+			seating = project_dict['seating']
 		)
-		project.seating = project_dict['seating']
-		project.url = project_dict['url']
 		project_list.append(project)
 	return project_list
 
