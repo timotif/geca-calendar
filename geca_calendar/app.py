@@ -3,6 +3,7 @@ import dotenv
 from logging_config import logger
 import hashlib
 import base64
+from database import db
 
 loaded_env = False
 if not os.getenv("SECRET_KEY") or not os.getenv("NOTION_DB_ID") or not os.getenv("NOTION_TOKEN"):
@@ -13,12 +14,15 @@ if not os.getenv("SECRET_KEY") or not os.getenv("NOTION_DB_ID") or not os.getenv
 		logger.debug("Environment variables loaded from .env file")
 
 from flask import Flask, send_from_directory, render_template, request, jsonify 
-from notion_interface import read_database, fetch_projects, create_calendar, create_custom_project_list, json_to_projects
+from notion_interface import read_database, fetch_projects, create_calendar, create_custom_project_list, json_to_projects, add_hash_to_db
 import datetime
 import json
+from models import CalendarHash, ProjectDb
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///projects.db" # TODO: update when dockerize
+db.init_app(app)
 
 database_id = os.environ.get("NOTION_DB_ID")
 get_url = 'https://api.notion.com/v1/databases/'
@@ -37,11 +41,19 @@ def authorization_required():
 def page_not_found():
 	return "I couldn't find the requested resource", 404
 
+def add_projects_to_db(projects):
+	logger.info("Adding projects to the database")
+	for project in projects:
+		logger.debug(f"Adding project {project.name} to the database")
+		project.save_to_db()
+	logger.info("Projects added to the database")
+
 @app.route('/update')
 def update_calendar():
 	global LAST_UPDATE
 	data = read_database(database_id)
 	project_list = fetch_projects(data)
+	add_projects_to_db(project_list)
 	create_calendar(project_list, f"{DIRECTORY}/{FILENAME}")
 	LAST_UPDATE = datetime.datetime.now()
 	return send_from_directory(DIRECTORY, FILENAME)
@@ -93,12 +105,16 @@ def list_projects():
 	selected_project_ids = request.form.getlist('selected_projects')
 	with open('projects.json', 'r') as file:
 		projects = json.load(file)
-	filename = f"{generate_hashed_filename(selected_project_ids)}.ics"
+	hash = generate_hashed_filename(selected_project_ids)
+	filename = f"{hash}.ics"
 	project_list = create_custom_project_list(selected_project_ids, projects)
 	create_calendar(project_list, filename=f"{DIRECTORY}/{filename}")
+	add_hash_to_db(hash, project_list)
 	return render_template("custom.html", filename=filename)
 
 if __name__ == "__main__":
 	if not os.path.exists(DIRECTORY):
 		os.makedirs(DIRECTORY)
-	app.run(host='0.0.0.0', port=8080, debug=True)
+	with app.app_context():
+		db.create_all()
+	app.run(host='0.0.0.0', port=8080, debug=True) # TODO: remove debug=True

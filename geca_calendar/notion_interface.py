@@ -3,6 +3,8 @@ from ics import Calendar, Event
 import json
 import logging
 import os
+from models import ProjectDb, CalendarHash
+import datetime
 
 logger = logging.getLogger("geca_calendar")
 
@@ -103,6 +105,31 @@ class Project:
 		c.events.add(e)
 		with open(f'./{filename}', 'w') as my_file:
 			my_file.writelines(c)
+	
+	def save_to_db(self):
+		"""Saves the project to the database"""
+		start = datetime.datetime.strptime(self.date_start, "%Y-%m-%d")
+		end = datetime.datetime.strptime(self.date_end, "%Y-%m-%d")
+		# Checking if the project exists
+		existing_project = ProjectDb.query.get(self.id)
+		if existing_project:
+			logger.debug(f"Project {self.name} already exists in the database. Updating...")
+			existing_project.name = self.name
+			existing_project.start_date = start
+			existing_project.end_date = end
+			existing_project.url = self.url
+			existing_project.seating = self.seating
+			existing_project.save()
+			return
+		project = ProjectDb(
+			id=self.id,
+			name=self.name,
+			start_date=start,
+			end_date=end,
+			url=self.url,
+			seating=self.seating
+		)
+		project.save()
 
 def fetch_projects(data) -> list[Project]:
 	project_list = []
@@ -141,6 +168,24 @@ def find_project_by_id(project_id: str, projects: json) -> dict | None:
 		if project_id == p['id']:
 			return p
 	return None
+
+def add_hash_to_db(hash: str, projects: list[Project]):
+	"""Add a hash to the database"""
+	logger.debug(f"Creating custom calendar with hash {hash}")
+	existing_hash = CalendarHash.query.filter_by(hash=hash).first()
+	if existing_hash:
+		logger.debug(f"Hash {hash} already exists in the database. Skipping...")
+		return # TODO: handle this case better
+	hash_obj = CalendarHash(hash=hash)
+	for project in projects:
+		project_db_obj = ProjectDb.query.get(project.id)
+		if not project_db_obj:
+			logger.debug(f"Project {project.name} not found in the database. Skipping...")
+			continue # TODO: handle this case better
+		hash_obj.projects.append(project_db_obj)
+		logger.debug(f"Adding project {project.name} to the custom calendar {hash}")
+	logger.info("Saving custom calendar hash to the database")
+	hash_obj.save()
 
 def create_custom_project_list(selected_project_ids: str, projects: json) -> list[Project]:
 	"""Given a list of project ids and a list of projects it returns a list of projects with the given ids"""
