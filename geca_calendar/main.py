@@ -73,7 +73,7 @@ def fetch_projects_api():
 	else:
 		data = read_database(database_id)
 		project_list = fetch_projects(data)
-		create_calendar(project_list, save_to_calendar=False, save_to_json=True)
+		create_calendar(project_list, save=False, save_to_json=True)
 	LAST_UPDATE = datetime.datetime.now()
 	return jsonify([project.__dict__ for project in project_list])
 
@@ -93,7 +93,6 @@ def list_projects():
 	selected_project_ids = request.form.getlist('selected_projects')
 	with open('projects.json', 'r') as file:
 		projects = json.load(file)
-	# filename = 'custom_calendar.ics'
 	filename = f"{generate_hashed_filename(selected_project_ids)}.ics"
 	project_list = create_custom_project_list(selected_project_ids, projects)
 	create_calendar(project_list, filename=f"{DIRECTORY}/{filename}")

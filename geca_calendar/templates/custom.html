@@ -11,8 +11,12 @@
 <script>
 	document.addEventListener('DOMContentLoaded', async () => {
 		const filename = "{{ filename }}";
-		console.log(filename);
-		await fetch("/" + filename)
+		console.log(filename); // TODO: remove this line
+		a = document.createElement('a');
+		a.href = filename;
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
 	})	
 </script>
 </html>
