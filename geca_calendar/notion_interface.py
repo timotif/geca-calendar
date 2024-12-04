@@ -123,11 +123,11 @@ def fetch_projects(data) -> list[Project]:
 	project_list.sort(key=lambda x: x.date_start)
 	return project_list
 
-def create_calendar(project_list: json, filename='geca_calendar.ics' , save_to_calendar=True, save_to_json=False) -> None:
+def create_calendar(project_list: json, filename='geca_calendar.ics' , save=True, save_to_json=False) -> None:
 	"""Given a json and a filename it iterates through the results, creates instances of the Project class, saves them as events in a
 	ics calendar and returns a list of Projects. Default filename is geca_calendar.ics. Optionally it saves the data in a json file"""
 	project_calendar = Calendar()
-	if save_to_calendar:
+	if save:
 		for project in project_list:
 			project.save_to_calendar(project_calendar, filename=filename)
 	if save_to_json:
@@ -167,6 +167,13 @@ def json_to_projects(data: json) -> list[Project]:
 	project_list = []
 	for project in data:
 		# print(project)
-		p = Project(project['id'], project['name'], project['date_start'], project['date_end'], project['url'], project['seating'])
+		p = Project(
+			project['id'], 
+			project['name'], 
+			project['date_start'], 
+			project['date_end'], 
+			project['url'], 
+			project['seating']
+			)
 		project_list.append(p)
 	return project_list

@@ -9,6 +9,10 @@
 	<div id="calendar-name">Your custom calendar is {{ filename }}</div>
 </body>
 <script>
-	
+	document.addEventListener('DOMContentLoaded', async () => {
+		const filename = "{{ filename }}";
+		console.log(filename);
+		await fetch("/" + filename)
+	})	
 </script>
 </html>

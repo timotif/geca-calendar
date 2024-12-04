@@ -1,6 +1,8 @@
 import os
 import dotenv
 from logging_config import logger
+import hashlib
+import base64
 
 loaded_env = False
 if not os.getenv("SECRET_KEY") or not os.getenv("NOTION_DB_ID") or not os.getenv("NOTION_TOKEN"):
@@ -10,7 +12,7 @@ if not os.getenv("SECRET_KEY") or not os.getenv("NOTION_DB_ID") or not os.getenv
 	else:
 		logger.debug("Environment variables loaded from .env file")
 
-from flask import Flask, send_file, render_template, request, jsonify 
+from flask import Flask, send_from_directory, render_template, request, jsonify 
 from notion_interface import read_database, fetch_projects, create_calendar, create_custom_project_list, json_to_projects
 import datetime
 import json
@@ -21,9 +23,10 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 database_id = os.environ.get("NOTION_DB_ID")
 get_url = 'https://api.notion.com/v1/databases/'
 
+DIRECTORY = 'calendars'
 FILENAME = 'geca2425.ics'
 LAST_UPDATE = None
-LAST_UPDATE = datetime.datetime.now() # TODO: remove
+# LAST_UPDATE = datetime.datetime.now() # TODO: remove
 UPDATE_EVERY = datetime.timedelta(hours=6)
 
 @app.errorhandler(403)
@@ -39,24 +42,24 @@ def update_calendar():
 	global LAST_UPDATE
 	data = read_database(database_id)
 	project_list = fetch_projects(data)
-	create_calendar(project_list, FILENAME)
+	create_calendar(project_list, f"{DIRECTORY}/{FILENAME}")
 	LAST_UPDATE = datetime.datetime.now()
-	return send_file(FILENAME)
+	return send_from_directory(DIRECTORY, FILENAME)
 
 @app.route('/')
 def get_events():
 	if LAST_UPDATE is None or \
 		datetime.datetime.now() - LAST_UPDATE > UPDATE_EVERY or\
-		not os.path.exists(FILENAME):
+		not os.path.exists(f"{DIRECTORY}/{FILENAME}"):
 			update_calendar()
-	return send_file(FILENAME)
+	return send_from_directory(DIRECTORY, FILENAME)
 
 @app.route('/<path:filename>')
 def download_calendar(filename):
 	if filename[-4:] != ".ics":
 		return authorization_required()
 	try:
-		return send_file(filename)
+		return send_from_directory(DIRECTORY, filename)
 	except FileNotFoundError:
 		return page_not_found()
 
@@ -74,6 +77,13 @@ def fetch_projects_api():
 	LAST_UPDATE = datetime.datetime.now()
 	return jsonify([project.__dict__ for project in project_list])
 
+def generate_hashed_filename(selected_project_ids: str) -> str:
+	"""From a list of project ids, generate a hashed filename"""
+	input_str = ' '.join(map(str, selected_project_ids))
+	hashed = hashlib.sha256(input_str.encode())
+	hash_base64 = base64.urlsafe_b64encode(hashed.digest())
+	return hash_base64.decode()[:8]
+
 @app.route('/list', methods=['GET', 'POST'])
 def list_projects():
 	# GET method
@@ -84,12 +94,12 @@ def list_projects():
 	with open('projects.json', 'r') as file:
 		projects = json.load(file)
 	# filename = 'custom_calendar.ics'
-	filename = f"{hex(hash(' '.join(selected_project_ids)))}.ics"[2:]
-	print(' '.join(selected_project_ids))
+	filename = f"{generate_hashed_filename(selected_project_ids)}.ics"
 	project_list = create_custom_project_list(selected_project_ids, projects)
-	create_calendar(project_list, filename=filename)
+	create_calendar(project_list, filename=f"{DIRECTORY}/{filename}")
 	return render_template("custom.html", filename=filename)
-	# return send_file(filename)
 
 if __name__ == "__main__":
+	if not os.path.exists(DIRECTORY):
+		os.makedirs(DIRECTORY)
 	app.run(host='0.0.0.0', port=8080, debug=True)
