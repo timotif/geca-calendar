@@ -1,5 +1,5 @@
 #!/bin/bash
-CALENDAR_PATH=geca_calendar
+CALENDAR_PATH=app
 
 # Load environment variables from .env file
 if [ -f .env ]; then

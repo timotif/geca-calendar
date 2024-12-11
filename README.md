@@ -80,7 +80,7 @@ make fclean
    python3 -m venv venv
    source venv/bin/activate
    pip install --upgrade pip
-   pip install -r geca_calendar/requirements.txt
+   pip install -r app/requirements.txt
    ```
 
 2. **Run the update script**:
