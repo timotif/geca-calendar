@@ -14,7 +14,7 @@ if not os.getenv("SECRET_KEY") or not os.getenv("NOTION_DB_ID") or not os.getenv
 		logger.debug("Environment variables loaded from .env file")
 
 from flask import Flask, send_from_directory, render_template, request, jsonify 
-from notion_interface import read_database, fetch_projects, create_calendar, create_custom_project_list, json_to_projects, add_hash_to_db
+from notion_interface import read_notion_database, fetch_projects, create_calendar, create_custom_project_list, json_to_projects, add_hash_to_db
 import datetime
 import json
 from models import CalendarHash, ProjectDb
@@ -48,22 +48,26 @@ def add_projects_to_db(projects):
 		project.save_to_db()
 	logger.info("Projects added to the database")
 
-@app.route('/update')
+def is_up_to_date():
+	return LAST_UPDATE is not None and datetime.datetime.now() - LAST_UPDATE < UPDATE_EVERY
+
 def update_calendar():
 	global LAST_UPDATE
-	data = read_database(database_id)
+	data = read_notion_database(database_id)
 	project_list = fetch_projects(data)
 	add_projects_to_db(project_list)
 	create_calendar(project_list, f"{DIRECTORY}/{FILENAME}")
+	db_projects = CalendarHash.query.all()
+	for hash in db_projects:
+		logger.debug(f"Fetching projects for hash {hash.hash}")
+		projects = [project.id for project in hash.projects]
+		logger.debug(f"Projects: {projects}")
 	LAST_UPDATE = datetime.datetime.now()
-	return send_from_directory(DIRECTORY, FILENAME)
 
 @app.route('/')
 def get_events():
-	if LAST_UPDATE is None or \
-		datetime.datetime.now() - LAST_UPDATE > UPDATE_EVERY or\
-		not os.path.exists(f"{DIRECTORY}/{FILENAME}"):
-			update_calendar()
+	if not is_up_to_date() or not os.path.exists(f"{DIRECTORY}/{FILENAME}"):
+		update_calendar()
 	return send_from_directory(DIRECTORY, FILENAME)
 
 @app.route('/<path:filename>')
@@ -83,7 +87,7 @@ def fetch_projects_api():
 			project_json = json.load(file)
 			project_list = json_to_projects(project_json)
 	else:
-		data = read_database(database_id)
+		data = read_notion_database(database_id)
 		project_list = fetch_projects(data)
 		create_calendar(project_list, save=False, save_to_json=True)
 	LAST_UPDATE = datetime.datetime.now()

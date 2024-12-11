@@ -15,7 +15,7 @@ HEADERS = {
 	'Content-Type': 'application/json',
 }
 
-def read_database(database_id):
+def read_notion_database(database_id):
 	"""Given a database_id and the secret token it returns a json of the database"""
 	logger.info("Fetching data")
 	read_url = f"https://api.notion.com/v1/databases/{database_id}/query"
@@ -115,8 +115,8 @@ class Project:
 		if existing_project:
 			logger.debug(f"Project {self.name} already exists in the database. Updating...")
 			existing_project.name = self.name
-			existing_project.start_date = start
-			existing_project.end_date = end
+			existing_project.date_start = start
+			existing_project.date_end = end
 			existing_project.url = self.url
 			existing_project.seating = self.seating
 			existing_project.save()
@@ -124,8 +124,8 @@ class Project:
 		project = ProjectDb(
 			id=self.id,
 			name=self.name,
-			start_date=start,
-			end_date=end,
+			date_start=start,
+			date_end=end,
 			url=self.url,
 			seating=self.seating
 		)
@@ -177,6 +177,7 @@ def add_hash_to_db(hash: str, projects: list[Project]):
 		logger.debug(f"Hash {hash} already exists in the database. Skipping...")
 		return # TODO: handle this case better
 	hash_obj = CalendarHash(hash=hash)
+	hash_obj.save()
 	for project in projects:
 		project_db_obj = ProjectDb.query.get(project.id)
 		if not project_db_obj:
