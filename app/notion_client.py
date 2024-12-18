@@ -1,7 +1,7 @@
 from interfaces import DataSourceInterface
 import requests
 from logging_config import logger
-
+from data_transfer_objects import ProjectDTO 
 class NotionReader():
 	"""Base class for Notion API readers"""
 	def __init__(self, token: str):
@@ -60,22 +60,35 @@ class NotionDataSource(DataSourceInterface):
 		return NotionBlockChildrenReader(self.token, project['id']).fetch_data()
 	
 	def process_seating_section(self, blocks: iter) -> dict:
-		seating = []
+		seating = {}
 		block = next(blocks, None)
 		while block and not self.is_divider(block):
 			try:
 				key = block['child_page']['title']
-				value = block['id']
-				logger.debug(f"Adding seating to {key} with id {value}")
-				seating = NotionBlockChildrenReader(self.token, value).fetch_data()
 			except KeyError as e:
 				if e.args[0] == 'child_page':
 					logger.debug("Empty block found")
-			block = next(blocks, None)		
+			value = block['id']
+			logger.debug(f"Adding seating to {key} with id {value}")
+			seating[key] = NotionBlockChildrenReader(self.token, value).fetch_data()
+			block = next(blocks, None)
 		return seating
 
+	def parse_seating(self, data: list[dict]) -> str:
+		seating = ""
+		repertoire = "Seating positions: TBD"
+		for repertoire in data:
+			for block in data[repertoire]:
+				type = block['type']
+				if type == 'heading_3':
+					seating += block[type]['rich_text'][0]['plain_text'] + ":\n" # Section name
+				elif type == 'paragraph' and len(block['paragraph']['rich_text']) != 0:
+					text = "\n".join([t['plain_text'] for t in block['paragraph']['rich_text']])
+					seating += text + "\n" # Section list
+		return f"{repertoire}\n{seating}\n"
+	
 	def extract_seating_from_blocks(self, project_blocks: list[dict]) -> dict:
-		seating = []
+		seating = {}
 		blocks = iter(project_blocks)
 		for block in blocks:
 			if self.is_seating_block(block):
@@ -85,13 +98,25 @@ class NotionDataSource(DataSourceInterface):
 				break
 		return seating
 
-	def fetch_data(self) -> list[dict]:
+	def to_project_dto(self, project: dict) -> ProjectDTO:
+		return ProjectDTO(
+			id = project['id'],
+			name = project['properties']['Name']['title'][0]['text']['content'],
+			date_start=project['properties']['Date']['date']['start'],
+			date_end=project['properties']['Date']['date']['end'],
+			url=project['url'],
+			seating=self.parse_seating(project['seating'])
+		)
+	
+	def fetch_data(self) -> list[ProjectDTO]:
 		logger.info("Fetching data")
-		projects = self.database_reader.fetch_data() # Projects in calendar
-		if not projects:
+		projects_data = self.database_reader.fetch_data() # Projects in calendar
+		if not projects_data:
 			logger.error("No projects found")
 			return []
-		for project in projects:
+		for project in projects_data:
 			project['blocks'] = self.fetch_project_blocks(project) # Blocks in project
 			project['seating'] = self.extract_seating_from_blocks(project['blocks']) # Parse blocks to find seating
+		projects = [self.to_project_dto(project) for project in projects_data]
+		projects.sort(key=lambda x: x.date_start)
 		return projects
