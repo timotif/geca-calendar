@@ -17,6 +17,14 @@ class StorageInterface(ABC):
 	def get(self, query: dict) -> List[Dict]:
 		pass
 
+	@abstractmethod
+	def get_all(self) -> List[Dict]:
+		pass
+
+	@abstractmethod
+	def get_by_id(self, id: str) -> Dict:
+		pass 
+
 class CalendarGeneratorInterface(ABC):
 	"""Interface for calendar generators"""
 	@abstractmethod
