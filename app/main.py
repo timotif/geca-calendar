@@ -7,6 +7,7 @@ from storage import ProjectRepository
 from calendar_generator import ICSCalendarGenerator
 from service import CalendarService
 import sys
+from logging_config import logger
 
 def create_app(config=None):
 	try:
@@ -38,11 +39,13 @@ def create_app(config=None):
 			notion, repo, ics
 		)
 
+		logger.info("Application started")
 		return app
+	
 	except ConfigError as e:
-		print(f"Configuration error: {e}", file=sys.stderr)
+		logger.error(f"Configuration error: {e}")
 		sys.exit(1)
-		
+
 if __name__ == "__main__":
 	app = create_app()
 	app.run(debug=True, host="0.0.0.0", port=8080)

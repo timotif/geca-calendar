@@ -29,7 +29,10 @@ def validate_config(config: Config) -> bool:
 	required_vars = {
 		'NOTION_DB_ID': config.NOTION_DB_ID,
 		'NOTION_TOKEN': config.NOTION_TOKEN,
+		'SECRET_KEY': config.SECRET_KEY,
 	}
 	missing = [key for key, value in required_vars.items() if not value]
 	if missing:
 		raise ConfigError(f"Missing required environment variables: {', '.join(missing)}")
+	if not os.path.exists(DIRECTORY):
+		os.makedirs(DIRECTORY)

@@ -25,5 +25,3 @@ logger.setLevel(logger_level)
 # Add handlers to the logger
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
-
-logger.info("Application started")
