@@ -1,5 +1,5 @@
 from database import db
-from ics import Event
+from data_transfer_objects import ProjectDTO
 
 # Association table for many-to-many relationship between ProjectDb and CalendarHash
 custom_calendar = db.Table('custom_calendar',
@@ -26,6 +26,16 @@ class ProjectDb(db.Model):
 	def save(self):
 		db.session.add(self)
 		db.session.commit()
+
+	def to_project_dto(self) -> ProjectDTO:
+		return ProjectDTO(
+			id = self.id,
+			name = self.name,
+			date_start=self.date_start,
+			date_end=self.date_end,
+			url=self.url,
+			seating=self.seating
+		)
 
 class CalendarHash(db.Model):
 	hash = db.Column(db.String(8), primary_key= True)

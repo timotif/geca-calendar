@@ -1,6 +1,8 @@
 import os
 from datetime import datetime
 from config import UPDATE_EVERY, DIRECTORY
+import hashlib
+import base64
 
 LAST_UPDATE = None
 
@@ -20,7 +22,14 @@ class CalendarService():
 		self.db.save(data)
 		self.last_update = datetime.now()
 		return data
-
+	
+	def generate_hashed_filename(self, selected_project_ids: str) -> str:
+		"""From a list of project ids, generate a hashed filename"""
+		input_str = ' '.join(map(str, selected_project_ids))
+		hashed = hashlib.sha256(input_str.encode())
+		hash_base64 = base64.urlsafe_b64encode(hashed.digest())
+		return hash_base64.decode()[:8]
+	
 	def create_full_calendar(self):
 		path = os.path.join(self.directory, self.ics_handler.filename)
 		if not (self.is_up_to_date() and os.path.exists(path)):
@@ -28,3 +37,8 @@ class CalendarService():
 			self.ics_handler.generate(data, path)
 		return self.directory, self.ics_handler.filename
 
+	def create_custom_calendar(self, project_ids: list[str]):
+		hash = self.generate_hashed_filename(project_ids)
+		projects = [self.db.get_by_id(project).to_project_dto() for project in project_ids]
+		self.ics_handler.generate(projects, os.path.join(self.directory, f"{hash}.ics"))
+		return self.directory, f"{hash}.ics"

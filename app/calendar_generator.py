@@ -23,9 +23,11 @@ class ICSCalendarGenerator(CalendarGeneratorInterface):
 	def add_to_calendar(self, event: Event):
 		self.calendar.events.add(event)
 
-	def save(self):
-		logger.info(f"Saving calendar to {self.filename}")
-		with open(f'./{self.filename}', 'w') as my_file:
+	def save(self, filename=""):
+		if not filename:
+			filename = self.filename
+		logger.info(f"Saving calendar to {filename}")
+		with open(f'./{filename}', 'w') as my_file:
 			my_file.writelines(self.calendar)
 
 	def generate(self, events: list[dict], filename: str=""):
@@ -34,5 +36,5 @@ class ICSCalendarGenerator(CalendarGeneratorInterface):
 		for event in events:
 			new_event = self.add_event(event)
 			self.add_to_calendar(new_event)
-		self.save()
+		self.save(filename)
 

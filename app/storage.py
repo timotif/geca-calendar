@@ -24,8 +24,8 @@ class ProjectRepository(StorageInterface):
 	def get_all(self):
 		return ProjectDb.query.all()
 	
-	def get_by_id(self, id: str) -> dict:
-		return ProjectDb.query.get(id).__dict__
+	def get_by_id(self, id: str) -> ProjectDb:
+		return ProjectDb.query.get(id)
 
 	def create_project(self, project: ProjectDTO):
 		p = ProjectDb(
