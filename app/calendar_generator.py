@@ -28,7 +28,9 @@ class ICSCalendarGenerator(CalendarGeneratorInterface):
 		with open(f'./{self.filename}', 'w') as my_file:
 			my_file.writelines(self.calendar)
 
-	def generate(self, events: list[dict], filename: str):
+	def generate(self, events: list[dict], filename: str=""):
+		if not filename:
+			filename = self.filename
 		for event in events:
 			new_event = self.add_event(event)
 			self.add_to_calendar(new_event)
