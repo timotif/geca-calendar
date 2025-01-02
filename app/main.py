@@ -1,6 +1,7 @@
 from config import DevConfig, ProdConfig
 from flask import Flask
 from database import init_db
+from routes import calendar
 
 def create_app(config=None):
 	app = Flask(__name__)
@@ -13,6 +14,8 @@ def create_app(config=None):
 	# Init database
 	init_db(app)
 
+	# Init blueprints
+	app.register_blueprint(calendar)
 	return app
 
 if __name__ == "__main__":
