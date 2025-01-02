@@ -1,4 +1,4 @@
-from config import DevConfig, ProdConfig
+from config import DevConfig, ProdConfig, ConfigError, validate_config
 from flask import Flask
 from database import get_db
 from routes import calendar
@@ -6,36 +6,43 @@ from notion_client import NotionDataSource
 from storage import ProjectRepository
 from calendar_generator import ICSCalendarGenerator
 from service import CalendarService
+import sys
 
 def create_app(config=None):
-	app = Flask(__name__)
-	
-	# Load config
-	if config == None:
-		config = DevConfig if app.debug else ProdConfig
-	app.config.from_object(config)
+	try:
+		app = Flask(__name__)
+		
+		# Load config
+		if config == None:
+			config = DevConfig if app.debug else ProdConfig
+		app.config.from_object(config)
 
-	# Get database
-	db = get_db(app)
+		validate_config(config)
 
-	# Init blueprints
-	app.register_blueprint(calendar)
+		# Get database
+		db = get_db(app)
 
-	# Create dependencies
-	notion = NotionDataSource(
-		app.config["NOTION_TOKEN"], 
-		app.config["NOTION_DB_ID"]
-	)
-	repo = ProjectRepository(db)
-	ics = ICSCalendarGenerator()
+		# Init blueprints
+		app.register_blueprint(calendar)
 
-	# Link to app context
-	app.calendar = CalendarService(
-		notion, repo, ics
-	)
+		# Create dependencies
+		notion = NotionDataSource(
+			app.config["NOTION_TOKEN"], 
+			app.config["NOTION_DB_ID"]
+		)
+		repo = ProjectRepository(db)
+		ics = ICSCalendarGenerator()
 
-	return app
+		# Link to app context
+		app.calendar = CalendarService(
+			notion, repo, ics
+		)
 
+		return app
+	except ConfigError as e:
+		print(f"Configuration error: {e}", file=sys.stderr)
+		sys.exit(1)
+		
 if __name__ == "__main__":
 	app = create_app()
 	app.run(debug=True, host="0.0.0.0", port=8080)
