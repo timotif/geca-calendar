@@ -1,8 +1,7 @@
 from interfaces import CalendarGeneratorInterface
 from ics import Calendar, Event
 from logging_config import logger
-
-FILENAME = "geca2425.ics"
+from config import FILENAME
 
 class ICSCalendarGenerator(CalendarGeneratorInterface):
 	def __init__(self, filename: str=FILENAME):

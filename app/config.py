@@ -2,13 +2,17 @@ from dataclasses import dataclass
 import datetime
 import os
 
+DIRECTORY = 'calendars'
+FILENAME = 'geca2425.ics'
+UPDATE_EVERY = datetime.timedelta(hours=6)
+
 @dataclass
 class Config:
 	SQLALCHEMY_DATABASE_URI: str
 	SECRET_KEY: str
-	NOTION_DB_ID: str
-	UPDATE_INTERVAL = datetime.timedelta(hours=6)
+	UPDATE_INTERVAL = UPDATE_EVERY
 	NOTION_DB_ID = os.environ.get("NOTION_DB_ID")
+	NOTION_TOKEN = os.environ.get("NOTION_TOKEN")
 
 class DevConfig(Config):
 	SQLALCHEMY_DATABASE_URI = "sqlite:///projects.db"
