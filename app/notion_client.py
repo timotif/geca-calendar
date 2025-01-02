@@ -85,6 +85,7 @@ class NotionDataSource(DataSourceInterface):
 				if type == 'paragraph' and len(block['paragraph']['rich_text']) != 0:
 					text = "\n".join([t['plain_text'] for t in block['paragraph']['rich_text']])
 					seating += text + "\n" # Section list
+			seating += "\n"
 		return seating
 	
 	def extract_seating_from_blocks(self, project_blocks: list[dict]) -> dict:
