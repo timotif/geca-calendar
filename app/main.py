@@ -17,7 +17,6 @@ def create_app(config=None):
 		if config == None:
 			config = DevConfig if app.debug else ProdConfig
 		app.config.from_object(config)
-
 		validate_config(config)
 
 		# Get database
@@ -48,4 +47,4 @@ def create_app(config=None):
 
 if __name__ == "__main__":
 	app = create_app()
-	app.run(debug=True, host="0.0.0.0", port=8080)
+	app.run(host="0.0.0.0", port=8080)

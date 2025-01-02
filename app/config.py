@@ -6,6 +6,11 @@ DIRECTORY = 'calendars'
 FILENAME = 'geca2425.ics'
 UPDATE_EVERY = datetime.timedelta(hours=6)
 
+# TODO: remove in production
+import dotenv
+ENV_FILE = "../.env"
+env = dotenv.load_dotenv(ENV_FILE)
+
 class ConfigError(Exception):
 	pass
 
@@ -16,6 +21,7 @@ class Config:
 	UPDATE_INTERVAL = UPDATE_EVERY
 	NOTION_DB_ID = os.environ.get("NOTION_DB_ID")
 	NOTION_TOKEN = os.environ.get("NOTION_TOKEN")
+	DEBUG = os.environ.get("DEBUG") == "1"
 
 class DevConfig(Config):
 	SQLALCHEMY_DATABASE_URI = "sqlite:///projects.db"
