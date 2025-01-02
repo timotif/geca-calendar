@@ -12,6 +12,7 @@ class ProjectRepository(StorageInterface):
 		for project_dto in data:
 			project = ProjectDb.query.get(project_dto.id)
 			if project:
+				self.db.session.add(project)
 				self.update_project(project, project_dto)
 			else:
 				self.create_project(project_dto)

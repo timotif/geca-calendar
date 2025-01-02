@@ -75,17 +75,17 @@ class NotionDataSource(DataSourceInterface):
 		return seating
 
 	def parse_seating(self, data: list[dict]) -> str:
+		if len(data) == 0:
+			return "Seating positions: TBD"
 		seating = ""
-		repertoire = "Seating positions: TBD"
 		for repertoire in data:
+			seating += f"{repertoire}\n"
 			for block in data[repertoire]:
 				type = block['type']
-				if type == 'heading_3':
-					seating += block[type]['rich_text'][0]['plain_text'] + ":\n" # Section name
-				elif type == 'paragraph' and len(block['paragraph']['rich_text']) != 0:
+				if type == 'paragraph' and len(block['paragraph']['rich_text']) != 0:
 					text = "\n".join([t['plain_text'] for t in block['paragraph']['rich_text']])
 					seating += text + "\n" # Section list
-		return f"{repertoire}\n{seating}\n"
+		return seating
 	
 	def extract_seating_from_blocks(self, project_blocks: list[dict]) -> dict:
 		seating = {}

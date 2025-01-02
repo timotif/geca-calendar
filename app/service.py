@@ -3,7 +3,6 @@ from datetime import datetime
 from config import UPDATE_EVERY, DIRECTORY
 
 LAST_UPDATE = None
-# LAST_UPDATE = datetime.datetime.now() # TODO: remove
 
 class CalendarService():
 	def __init__(self, data_source, db, ics_handler):
@@ -24,9 +23,8 @@ class CalendarService():
 
 	def create_full_calendar(self):
 		path = f"{self.directory}/{self.ics_handler.filename}" if self.directory != "" else self.ics_handler.filename
-		if self.is_up_to_date() and os.path.exists(path):
-			return self.ics_handler.filename
-		data = self.update_calendar()
-		self.ics_handler.generate(data, path)
+		if not (self.is_up_to_date() and os.path.exists(path)):
+			data = self.update_calendar()
+			self.ics_handler.generate(data, path)
 		return self.directory, self.ics_handler.filename
 
