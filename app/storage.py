@@ -27,6 +27,18 @@ class ProjectRepository(StorageInterface):
 	def get_by_id(self, id: str) -> ProjectDb:
 		return ProjectDb.query.get(id)
 
+	def get_by_hash(self, hash: str):
+		return CalendarHash.query.get(hash)
+
+	def get_projects_by_hash(self, hash: str):
+		calendar_hash = self.get_by_hash(hash)
+		if calendar_hash:
+			return calendar_hash.projects
+		return []
+
+	def get_all_hashes(self):
+		return CalendarHash.query.all()
+
 	def create_project(self, project: ProjectDTO):
 		p = ProjectDb(
 			id=project.id,
