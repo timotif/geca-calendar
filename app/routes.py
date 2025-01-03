@@ -18,7 +18,9 @@ def custom_calendar():
 		return render_template("projects.html")
 	# POST method
 	dir, calendar_file = current_app.calendar.create_custom_calendar(request.form.getlist('selected_projects'))
-	return send_from_directory(dir, calendar_file)
+	if dir and calendar_file:
+		return send_from_directory(dir, calendar_file)
+	return bad_request()
 
 @calendar.route("/<path:filename>")
 def get_custom_calendar(filename):
@@ -28,6 +30,10 @@ def get_custom_calendar(filename):
 		return send_from_directory(DIRECTORY, filename)
 	except FileNotFoundError:
 		return page_not_found()
+
+@calendar.errorhandler(400)
+def bad_request():
+		return "Bad request", 400
 
 @calendar.errorhandler(403)
 def auth_required():
