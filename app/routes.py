@@ -10,6 +10,7 @@ def get_general_calendar():
 @calendar.route("/fetch_projects")
 def fetch_projects():
 	projects = current_app.calendar.update_calendar()
+	projects.sort(key=lambda x: x.date_start)
 	return jsonify(projects)
 
 @calendar.route("/list", methods=["GET", "POST"])

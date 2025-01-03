@@ -138,10 +138,12 @@ class NotionDataSource(DataSourceInterface):
 		Returns:
 			datetime.datetime: Local datetime of when the project was last edited, with timezone info removed.
 		"""
-
+		
+		# Parse UTC timestamp to datetime object and convert to local timezone
 		last_edited_utc = dateutil.parser.parse(project['last_edited_time'])
 		local_tz = tz.tzlocal()
-		return last_edited_utc.astimezone(local_tz).replace(tzinfo=None)
+		# Discarding timezone info to allow comparison with location naive datetime in ProjectService.__is_project_up_to_date
+		return last_edited_utc.astimezone(local_tz).replace(tzinfo=None) 
 
 	def fetch_project(self, project: dict):
 		"""
@@ -178,7 +180,6 @@ class NotionDataSource(DataSourceInterface):
 		1. Retrieves all projects from Notion
 		2. For each project, fetches additional project-specific data
 		3. Converts the raw data into ProjectDTO objects
-		4. Sorts projects by start date
 		Returns:
 			list[ProjectDTO]: A sorted list of ProjectDTO objects representing projects.
 							 Returns an empty list if no projects are found.
@@ -192,5 +193,4 @@ class NotionDataSource(DataSourceInterface):
 		for project in projects_data:
 			self.fetch_project(project) # Enriches projects with blocks and seating
 		projects = [self.to_project_dto(project) for project in projects_data] # Convert to DTO
-		projects.sort(key=lambda x: x.date_start) # Sort by start date
 		return projects
