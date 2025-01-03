@@ -2,7 +2,8 @@ from dataclasses import dataclass
 import datetime
 import os
 
-DIRECTORY = 'calendars'
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+DIRECTORY = os.path.join(APP_ROOT, 'calendars')
 FILENAME = 'geca2425.ics'
 UPDATE_EVERY = datetime.timedelta(hours=6)
 
