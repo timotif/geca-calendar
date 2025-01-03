@@ -160,3 +160,6 @@ tokens
 test*
 log
 backup
+instance
+calendars
+migrations
