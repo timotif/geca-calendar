@@ -1,4 +1,4 @@
-# GECA Calendar
+# GECA Calendar v2.0
 This is a Python dockerized webapp that handles a subscription calendar for [Geneva Camerata](https://genevacamerata.com/en) events
 
 ## Features
@@ -6,6 +6,12 @@ This is a Python dockerized webapp that handles a subscription calendar for [Gen
 - Fetch calendar data from Notion
 - Subscribe to calendar
 - Save calendars locally in ICS format
+
+## What's new in v2.0
+- **Handles custom calendars with a subset of projects**
+- Fully rewritten from scratch
+- More object oriented
+- More modular approach
 
 ## Getting Started
 
@@ -55,6 +61,14 @@ The app will be available at http://localhost:8001 (can be changed in the Makefi
 
 ### Hosting
 - You can host the app on a server and expose the port 8001
+
+### Custom calendar mode
+- Go to the _/list_ page of the web app
+- You'll see a list of all the projects
+- Select the projects you want to include in the calendar
+- Click on the Submit button
+- An address will be created for your specific calendar
+- Subscribe to that address (see below)
 
 #### Subscribing to a Calendar
 - *iCal*
