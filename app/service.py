@@ -3,6 +3,7 @@ from datetime import datetime
 import hashlib
 import base64
 from app.config import UPDATE_EVERY, DIRECTORY
+from app.logging_config import logger
 
 LAST_UPDATE = None
 
@@ -29,12 +30,32 @@ class CalendarService():
 		self.last_update = LAST_UPDATE
 		self.directory = DIRECTORY
 	
-	def __is_up_to_date(self):
+	def __is_calendar_up_to_date(self):
 		return self.last_update is not None and datetime.now() - self.last_update < UPDATE_EVERY
 
-	def __update_calendar(self):
-		data = self.data_source.fetch_data()
-		self.db.save(data)
+	def __is_project_up_to_date(self, project):
+		last_edited = self.data_source.project_last_updated(project)
+		project_db = self.db.get_by_id(project['id'])
+		return project_db and project_db.last_edited >= last_edited
+
+	def update_calendar(self):
+		# Fetch projects from notion calendar
+		projects = self.data_source.fetch_projects()
+		logger.debug(f"Fetched {len(projects)} projects")
+		# Identify outdated or missing projects and fetch just those 
+		outdated_projects = []
+		data = []
+		for p in projects:
+			if not self.__is_project_up_to_date(p):
+				self.data_source.fetch_project(p)
+				outdated_projects.append(self.data_source.to_project_dto(p))
+			else:
+				data.append(self.db.get_by_id(p['id']).to_project_dto())
+		assert len(outdated_projects) + len(data) == len(projects)
+		logger.debug(f"Outdated projects: {len(outdated_projects)}")
+		# Save updated projects to database
+		self.db.save(outdated_projects)
+		data += outdated_projects
 		self.last_update = datetime.now()
 		return data
 	
@@ -47,8 +68,8 @@ class CalendarService():
 	
 	def create_full_calendar(self) -> tuple[str, str]:
 		path = os.path.join(self.directory, self.ics_handler.filename)
-		if not (self.__is_up_to_date() and os.path.exists(path)):
-			data = self.__update_calendar()
+		if not (self.__is_calendar_up_to_date() and os.path.exists(path)):
+			data = self.update_calendar()
 			self.ics_handler.generate(data, path)
 		return self.directory, self.ics_handler.filename
 

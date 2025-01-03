@@ -1,7 +1,11 @@
-from app.interfaces import DataSourceInterface
 import requests
+from datetime import timezone
+import dateutil.parser
+from dateutil import tz
+from app.interfaces import DataSourceInterface
 from app.logging_config import logger
-from app.data_transfer_objects import ProjectDTO 
+from app.data_transfer_objects import ProjectDTO
+
 class NotionReader():
 	"""Base class for Notion API readers"""
 	def __init__(self, token: str):
@@ -19,7 +23,7 @@ class NotionDatabaseReader(NotionReader, DataSourceInterface):
 		NotionReader.__init__(self, token)
 		self.url = f"https://api.notion.com/v1/databases/{database_id}/query"
 
-	def fetch_data(self):
+	def fetch_data(self) -> list[dict]:
 		logger.debug("Fetching data from database")
 		response = requests.request("POST", self.url, headers=self.headers)
 		data = response.json()
@@ -91,7 +95,7 @@ class NotionDataSource(DataSourceInterface):
 		return seating
 
 	def __parse_seating(self, data: list[dict]) -> str:
-		if len(data) == 0:
+		if len(data) == 0 :
 			return "Seating positions: TBD"
 		seating = ""
 		for repertoire in data:
@@ -115,25 +119,78 @@ class NotionDataSource(DataSourceInterface):
 				break
 		return seating
 
-	def __to_project_dto(self, project: dict) -> ProjectDTO:
+	def to_project_dto(self, project: dict) -> ProjectDTO:
 		return ProjectDTO(
 			id = project['id'],
 			name = project['properties']['Name']['title'][0]['text']['content'],
 			date_start=project['properties']['Date']['date']['start'],
 			date_end=project['properties']['Date']['date']['end'],
 			url=project['url'],
-			seating=self.__parse_seating(project['seating'])
+			seating=self.__parse_seating(project.get('seating'))
 		)
 	
+	def project_last_updated(self, project: dict):
+		"""
+		Convert project's last edited time from UTC to local timezone.
+		Args:
+			project (dict): A dictionary containing project information including 'last_edited_time' key
+						   with UTC timestamp in ISO 8601 format.
+		Returns:
+			datetime.datetime: Local datetime of when the project was last edited, with timezone info removed.
+		"""
+
+		last_edited_utc = dateutil.parser.parse(project['last_edited_time'])
+		local_tz = tz.tzlocal()
+		return last_edited_utc.astimezone(local_tz).replace(tzinfo=None)
+
+	def fetch_project(self, project: dict):
+		"""
+		Fetches and processes project information from Notion.
+		This method enriches the given project dictionary with additional information:
+		- Fetches all blocks within the project
+		- Extracts seating information from the blocks
+		Args:
+			project (dict): Dictionary containing project information
+		Returns:
+			None: The method modifies the project dictionary in-place by adding:
+				- 'blocks': List of blocks contained in the project
+				- 'seating': Seating information extracted from blocks
+		"""
+
+		project['blocks'] = self.__fetch_project_blocks(project) # Blocks in project
+		project['seating'] = self.__extract_seating_from_blocks(project['blocks']) # Parse blocks to find seating
+
+	def fetch_projects(self):
+		"""
+		Fetches projects from the Notion database.
+		This method retrieves all projects stored in the Notion calendar database
+		using the database reader instance.
+		Returns:
+			list: A list of projects from the Notion calendar database.
+		"""
+
+		return self.database_reader.fetch_data()
+
 	def fetch_data(self) -> list[ProjectDTO]:
+		"""
+		Fetches and processes project data from Notion.
+		This method performs the following operations:
+		1. Retrieves all projects from Notion
+		2. For each project, fetches additional project-specific data
+		3. Converts the raw data into ProjectDTO objects
+		4. Sorts projects by start date
+		Returns:
+			list[ProjectDTO]: A sorted list of ProjectDTO objects representing projects.
+							 Returns an empty list if no projects are found.
+		"""
+
 		logger.info("Fetching data")
-		projects_data = self.database_reader.fetch_data() # Projects in calendar
+		projects_data = self.fetch_projects() # Projects in calendar
 		if not projects_data:
 			logger.error("No projects found")
 			return []
 		for project in projects_data:
-			project['blocks'] = self.__fetch_project_blocks(project) # Blocks in project
-			project['seating'] = self.__extract_seating_from_blocks(project['blocks']) # Parse blocks to find seating
-		projects = [self.__to_project_dto(project) for project in projects_data]
-		projects.sort(key=lambda x: x.date_start)
+			self.fetch_project(project) # Enriches projects with blocks and seating
+		projects = [self.to_project_dto(project) for project in projects_data] # Convert to DTO
+		projects.sort(key=lambda x: x.date_start) # Sort by start date
 		return projects

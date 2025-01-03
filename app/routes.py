@@ -9,7 +9,7 @@ def get_general_calendar():
 
 @calendar.route("/fetch_projects")
 def fetch_projects():
-	projects = current_app.calendar.data_source.fetch_data()
+	projects = current_app.calendar.update_calendar()
 	return jsonify(projects)
 
 @calendar.route("/list", methods=["GET", "POST"])
