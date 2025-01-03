@@ -1,13 +1,13 @@
-from config import DevConfig, ProdConfig, ConfigError, validate_config
+from app.config import DevConfig, ProdConfig, ConfigError, validate_config
 from flask import Flask
-from database import get_db
-from routes import calendar
-from notion_client import NotionDataSource
-from storage import ProjectRepository
-from calendar_generator import ICSCalendarGenerator
-from service import CalendarService
+from app.database import get_db
+from app.routes import calendar
+from app.notion_client import NotionDataSource
+from app.storage import ProjectRepository
+from app.calendar_generator import ICSCalendarGenerator
+from app.service import CalendarService
 import sys
-from logging_config import logger
+from app.logging_config import logger
 
 def create_app(config=None):
 	try:

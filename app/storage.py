@@ -1,8 +1,8 @@
-from interfaces import StorageInterface
 from flask_sqlalchemy import SQLAlchemy
-from models import ProjectDb, CalendarHash
-from data_transfer_objects import ProjectDTO
 from datetime import datetime
+from app.interfaces import StorageInterface
+from app.models import ProjectDb, CalendarHash
+from app.data_transfer_objects import ProjectDTO
 
 class ProjectRepository(StorageInterface):
 	def __init__(self, db: SQLAlchemy):

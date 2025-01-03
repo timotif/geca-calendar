@@ -1,7 +1,7 @@
-from interfaces import CalendarGeneratorInterface
 from ics import Calendar, Event
-from logging_config import logger
-from config import FILENAME
+from app.interfaces import CalendarGeneratorInterface
+from app.logging_config import logger
+from app.config import FILENAME
 
 class ICSCalendarGenerator(CalendarGeneratorInterface):
 	def __init__(self, filename: str=FILENAME):

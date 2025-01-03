@@ -1,8 +1,8 @@
 import os
 from datetime import datetime
-from config import UPDATE_EVERY, DIRECTORY
 import hashlib
 import base64
+from app.config import UPDATE_EVERY, DIRECTORY
 
 LAST_UPDATE = None
 
