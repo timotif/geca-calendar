@@ -27,7 +27,7 @@ class ICSCalendarGenerator(CalendarGeneratorInterface):
 		if not filename:
 			filename = self.filename
 		logger.info(f"Saving calendar to {filename}")
-		with open(f'./{filename}', 'w') as my_file:
+		with open(f'{filename}', 'w') as my_file:
 			my_file.writelines(self.calendar)
 
 	def generate(self, events: list[dict], filename: str=""):
