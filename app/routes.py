@@ -18,9 +18,9 @@ def custom_calendar():
 	if request.method == "GET":
 		return render_template("projects.html")
 	# POST method
-	dir, calendar_file = current_app.calendar.create_custom_calendar(request.form.getlist('selected_projects'))
-	if dir and calendar_file:
-		return send_from_directory(dir, calendar_file)
+	calendar_file = current_app.calendar.create_custom_calendar(request.form.getlist('selected_projects'))
+	if calendar_file:
+		return render_template("custom.html", filename=calendar_file)
 	return bad_request()
 
 @calendar.route("/<path:filename>")

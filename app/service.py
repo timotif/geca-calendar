@@ -73,12 +73,12 @@ class CalendarService():
 			self.ics_handler.generate(data, path)
 		return self.directory, self.ics_handler.filename
 
-	def create_custom_calendar(self, project_ids: list[str]) -> tuple[str, str]:
+	def create_custom_calendar(self, project_ids: list[str]) -> str:
 		hash = self.__generate_hashed_filename(project_ids)
 		projects_db = [self.db.get_by_id(project) for project in project_ids]
 		projects = [p.to_project_dto() for p in projects_db if p]
 		if not projects:
-			return "", ""
+			return ""
 		self.ics_handler.generate(projects, os.path.join(self.directory, f"{hash}.ics"))
 		self.db.save_custom_calendar(hash, project_ids)
-		return self.directory, f"{hash}.ics"
+		return f"{hash}.ics"
