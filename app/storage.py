@@ -69,7 +69,7 @@ class ProjectRepository(StorageInterface):
 		project.url = project_dto.url
 		project.seating = project_dto.seating
 
-	def save_calendar(self, hash: str, project_ids: list[str]):
+	def save_custom_calendar(self, hash: str, project_ids: list[str]):
 		calendar = CalendarHash.query.filter_by(hash=hash).first()
 		if not calendar:
 			calendar = CalendarHash(hash=hash)

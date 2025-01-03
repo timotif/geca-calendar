@@ -10,6 +10,16 @@ def init_db(app):
 	with app.app_context():
 		db.create_all()
 
-def get_db(app):
+def get_db(app) -> SQLAlchemy:
+	"""
+	Retrieves the database instance after initializing it.
+	This function ensures the database is properly initialized before returning
+	the database instance for use.
+	Args:
+		app: The Flask application instance.
+	Returns:
+		SQLAlchemy: The initialized database instance.
+	"""
+
 	init_db(app)
 	return db

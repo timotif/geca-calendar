@@ -1,6 +1,9 @@
 import logging
 import os
 
+# TODO: Add log rotation
+# TODO: Integrate with config.py
+
 LOG_DIR = './log'
 
 if not os.path.exists(LOG_DIR):

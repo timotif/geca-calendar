@@ -10,6 +10,22 @@ import sys
 from app.logging_config import logger
 
 def create_app(config=None):
+	"""
+	Creates and configures a Flask application with calendar functionality.
+	This factory function initializes a Flask application with the necessary dependencies,
+	configurations, and blueprints for the calendar service. It sets up connections to
+	Notion API, database storage, and ICS calendar generation.
+	Args:
+		config: Configuration object (DevConfig or ProdConfig). If None, uses DevConfig 
+			for debug mode or ProdConfig for production.
+	Returns:
+		Flask: Configured Flask application instance with calendar service attached.
+	Raises:
+		ConfigError: If there are issues with the configuration parameters.
+	Example:
+		app = create_app()  # Creates app with default config
+		app = create_app(DevConfig)  # Creates app with development config
+	"""
 	try:
 		app = Flask(__name__)
 		
@@ -45,6 +61,7 @@ def create_app(config=None):
 		logger.error(f"Configuration error: {e}")
 		sys.exit(1)
 
+# Local mode
 if __name__ == "__main__":
 	app = create_app()
 	app.run(host="0.0.0.0", port=8080)

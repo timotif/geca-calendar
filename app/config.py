@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import datetime
 import os
 
+# the use of __file__ guarantees that the path is relative to the file's location
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 DIRECTORY = os.path.join(APP_ROOT, 'calendars')
 FILENAME = 'geca2425.ics'
@@ -33,6 +34,21 @@ class ProdConfig(Config):
 	SECRET_KEY = os.environ.get("SECRET_KEY")
 
 def validate_config(config: Config) -> bool:
+	"""
+	Validates the configuration settings by checking required environment variables and directory existence.
+	Args:
+		config (Config): Configuration object containing required settings.
+	Returns:
+		bool: True if validation passes.
+	Raises:
+		ConfigError: If any required environment variables are missing.
+	The function checks for the following required variables:
+		- NOTION_DB_ID
+		- NOTION_TOKEN 
+		- SECRET_KEY
+	Also ensures that the DIRECTORY path exists, creating it if necessary.
+	"""
+
 	required_vars = {
 		'NOTION_DB_ID': config.NOTION_DB_ID,
 		'NOTION_TOKEN': config.NOTION_TOKEN,

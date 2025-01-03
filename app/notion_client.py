@@ -42,27 +42,43 @@ class NotionBlockChildrenReader(NotionReader, DataSourceInterface):
 		return data.get('results', [])
 
 class NotionDataSource(DataSourceInterface):
-	"""Reads a Notion database and fetches seating positions"""
+	"""A data source implementation that fetches project data from Notion.
+	This class implements the DataSourceInterface to read project data from a Notion database,
+	including seating position information stored in child pages.
+	Attributes:
+		database_reader (NotionDatabaseReader): Reader for the main Notion database
+		token (str): Authentication token for Notion API access
+	Args:
+		token (str): Authentication token for Notion API
+		database_id (str): ID of the Notion database to read from
+	Returns:
+		list[ProjectDTO]: List of projects with their associated data
+	Example:
+		>>> notion_source = NotionDataSource("token", "database_id") 
+		>>> projects = notion_source.fetch_data()
+		>>> print(projects[0].name)
+		'Project Name'
+	"""
 	def __init__(self, token: str, database_id: str):
 		self.database_reader = NotionDatabaseReader(token, database_id)
 		self.token = token
 	
-	def is_seating_block(self, block: dict) -> bool: # TODO: error handling
+	def __is_seating_block(self, block: dict) -> bool: # TODO: error handling
 		return block['type'] == 'paragraph' and \
 			len(block['paragraph']['rich_text']) != 0 and \
 			(block['paragraph']['rich_text'][0]['plain_text'].lower() == "seating positions" or \
 			block['paragraph']['rich_text'][0]['plain_text'].lower() == "seating position")
 
-	def is_divider(self, block: dict) -> bool: # TODO: error handling
+	def __is_divider(self, block: dict) -> bool: # TODO: error handling
 		return block['type'] == 'divider'
 
-	def fetch_project_blocks(self, project: dict) -> list[dict]:
+	def __fetch_project_blocks(self, project: dict) -> list[dict]:
 		return NotionBlockChildrenReader(self.token, project['id']).fetch_data()
 	
-	def process_seating_section(self, blocks: iter) -> dict:
+	def __process_seating_section(self, blocks: iter) -> dict:
 		seating = {}
 		block = next(blocks, None)
-		while block and not self.is_divider(block):
+		while block and not self.__is_divider(block):
 			try:
 				key = block['child_page']['title']
 			except KeyError as e:
@@ -74,7 +90,7 @@ class NotionDataSource(DataSourceInterface):
 			block = next(blocks, None)
 		return seating
 
-	def parse_seating(self, data: list[dict]) -> str:
+	def __parse_seating(self, data: list[dict]) -> str:
 		if len(data) == 0:
 			return "Seating positions: TBD"
 		seating = ""
@@ -88,25 +104,25 @@ class NotionDataSource(DataSourceInterface):
 			seating += "\n"
 		return seating
 	
-	def extract_seating_from_blocks(self, project_blocks: list[dict]) -> dict:
+	def __extract_seating_from_blocks(self, project_blocks: list[dict]) -> dict:
 		seating = {}
 		blocks = iter(project_blocks)
 		for block in blocks:
-			if self.is_seating_block(block):
+			if self.__is_seating_block(block):
 				logger.debug("Seating positions found")
 				# Seating is set up
-				seating = self.process_seating_section(blocks)
+				seating = self.__process_seating_section(blocks)
 				break
 		return seating
 
-	def to_project_dto(self, project: dict) -> ProjectDTO:
+	def __to_project_dto(self, project: dict) -> ProjectDTO:
 		return ProjectDTO(
 			id = project['id'],
 			name = project['properties']['Name']['title'][0]['text']['content'],
 			date_start=project['properties']['Date']['date']['start'],
 			date_end=project['properties']['Date']['date']['end'],
 			url=project['url'],
-			seating=self.parse_seating(project['seating'])
+			seating=self.__parse_seating(project['seating'])
 		)
 	
 	def fetch_data(self) -> list[ProjectDTO]:
@@ -116,8 +132,8 @@ class NotionDataSource(DataSourceInterface):
 			logger.error("No projects found")
 			return []
 		for project in projects_data:
-			project['blocks'] = self.fetch_project_blocks(project) # Blocks in project
-			project['seating'] = self.extract_seating_from_blocks(project['blocks']) # Parse blocks to find seating
-		projects = [self.to_project_dto(project) for project in projects_data]
+			project['blocks'] = self.__fetch_project_blocks(project) # Blocks in project
+			project['seating'] = self.__extract_seating_from_blocks(project['blocks']) # Parse blocks to find seating
+		projects = [self.__to_project_dto(project) for project in projects_data]
 		projects.sort(key=lambda x: x.date_start)
 		return projects
