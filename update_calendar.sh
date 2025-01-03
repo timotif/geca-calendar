@@ -1,9 +1,9 @@
 #!/bin/bash
-CALENDAR_PATH=app
+CALENDAR_MODULE=app
 
 # Load environment variables from .env file
 if [ -f .env ]; then
     export $(cat .env | xargs)
 fi
 
-python ${CALENDAR_PATH}/calendar_updater.py
+python -m ${CALENDAR_MODULE}.calendar_updater
