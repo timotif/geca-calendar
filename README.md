@@ -10,6 +10,8 @@ This is a Python dockerized webapp that handles a subscription calendar for [Gen
 ## What's new in v2.0
 - **Handles custom calendars with a subset of projects**
 - Fully rewritten from scratch
+- Persisting data in a database
+- Checking if projects are already up to date in the database to minimize API calls
 - More object oriented
 - More modular approach
 
