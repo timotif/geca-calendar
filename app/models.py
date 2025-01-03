@@ -38,6 +38,7 @@ class ProjectDb(db.Model):
 		secondary=custom_calendar, 
 		back_populates='projects'
 		)
+	last_edited = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
 	
 	def __repr__(self):
 		return self.name
