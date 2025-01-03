@@ -9,10 +9,21 @@ class ProjectRepository(StorageInterface):
 		self.db = db
 
 	def save(self, data: list[dict]):
+		"""
+		Saves a list of project DTOs to the database.
+		This method handles both creation of new projects and updates to existing ones.
+		For each project DTO in the input list, it checks if a corresponding project exists
+		in the database. If it exists, the project is updated with the new data.
+		If it doesn't exist, a new project is created.
+		Args:
+			data (list[dict]): A list of project DTOs to be saved to the database.
+							   Each DTO should contain an 'id' field and other project attributes.
+		Note:
+			Changes are committed to the database after all projects have been processed.
+		"""
 		for project_dto in data:
-			project = ProjectDb.query.get(project_dto.id)
+			project = self.get_by_id(project_dto.id)
 			if project:
-				self.db.session.add(project) # TODO: Test
 				self.update_project(project, project_dto)
 			else:
 				self.create_project(project_dto)
@@ -25,7 +36,7 @@ class ProjectRepository(StorageInterface):
 		return ProjectDb.query.all()
 	
 	def get_by_id(self, id: str) -> ProjectDb:
-		return ProjectDb.query.get(id)
+		return self.db.session.get(ProjectDb, id)
 
 	def get_by_hash(self, hash: str):
 		return CalendarHash.query.get(hash)
