@@ -1,0 +1,101 @@
+body {
+    background: 
+        linear-gradient(
+            217deg,
+            #350f1e 0%,
+            transparent 50%
+        ),
+        linear-gradient(
+            127deg,
+            #231e32 0%,
+            transparent 50%
+        ),
+        linear-gradient(
+            336deg,
+            #0c232f 0%,
+            transparent 50%
+        ),
+        linear-gradient(
+            45deg,
+            #070a15 0%,
+            transparent 50%
+        ),
+        url('../images/geca_calendar_background.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #070a15;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+.container h1 {
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    margin-bottom: 2rem;
+}
+
+#loader {
+    color: white;
+    text-align: center;
+}
+
+.list-group {
+    background: transparent;
+}
+
+.list-group-item {
+    background-color: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: white;
+    margin-bottom: 8px;
+    border-radius: 8px !important;
+    transition: all 0.3s ease;
+}
+
+.list-group-item:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+    transform: translateX(5px);
+}
+
+.btn-primary {
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+input[type="checkbox"] {
+    accent-color: rgba(255, 255, 255, 0.8);
+}
+
+/* 
+image background
+350f1e
+231e32
+0c232f
+070a15
+
+color palette
+Woody Brown
+#3f2831
+
+Burning Sand
+#d3836d
+
+Gulf Stream
+#81adb3
+
+Kimberly
+#6e77ab
+*/
