@@ -1,4 +1,4 @@
-from flask import Blueprint, current_app, render_template, send_from_directory, jsonify, request
+from flask import Blueprint, current_app, render_template, send_from_directory, jsonify, request, url_for
 from app.config import DIRECTORY
 calendar = Blueprint("calendar", __name__)
 
@@ -20,7 +20,8 @@ def custom_calendar():
 	# POST method
 	calendar_file = current_app.calendar.create_custom_calendar(request.form.getlist('selected_projects'))
 	if calendar_file:
-		return render_template("custom.html", filename=calendar_file)
+		full_url = url_for("calendar.get_custom_calendar", filename=calendar_file, _external=True)
+		return render_template("custom.html", filename=full_url)
 	return bad_request()
 
 @calendar.route("/<path:filename>")
