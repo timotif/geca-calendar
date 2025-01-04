@@ -20,7 +20,7 @@ body {
             #070a15 0%,
             transparent 50%
         ),
-        url('../images/geca_calendar_background.png');
+        url('../images/geca_calendar_no_background.png');
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
