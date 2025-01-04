@@ -1,29 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project List</title>
-	<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon-16x16.png') }}">
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-	<link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
-</head>
-<body>
-    <div class="container mt-5">
-        <h1 class="mb-4">Project List</h1>
-		<div id="loader">Loading...</div>
-		<div id="projects" style="display: none;">
-			<form action="/projects" method="post" id="projects-form">
-				<ul id="projects-list" class="list-group">
-					<!-- List populated in JS -->
-				</ul>
-				<button type="submit" class="btn btn-primary mt-4 submit-list">Submit</button>
-			</form>
-		</div>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-	<script src="{{ url_for('static', filename='js/projects.js') }}"></script>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Project List{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Project List</h1>
+<div id="loader">Loading...</div>
+<div id="projects" style="display: none;">
+    <form action="/projects" method="post" id="projects-form">
+        <ul id="projects-list" class="list-group">
+            <!-- List populated in JS -->
+        </ul>
+        <button type="submit" class="btn btn-primary mt-4 submit-list">Submit</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/projects.js') }}"></script>
+{% endblock %}
