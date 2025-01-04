@@ -13,7 +13,7 @@ def fetch_projects():
 	projects.sort(key=lambda x: x.date_start)
 	return jsonify(projects)
 
-@calendar.route("/list", methods=["GET", "POST"])
+@calendar.route("/projects", methods=["GET", "POST"])
 def custom_calendar():
 	if request.method == "GET":
 		return render_template("projects.html")
