@@ -28,6 +28,7 @@ def get_custom_calendar(filename):
 	if not filename.endswith(".ics"):
 		return auth_required()
 	try:
+		current_app.calendar.update_custom_calendars([filename[:-4]])
 		return send_from_directory(DIRECTORY, filename)
 	except FileNotFoundError:
 		return page_not_found()
