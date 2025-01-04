@@ -1,3 +1,11 @@
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
 	const btn = document.getElementsByClassName('submit-list').disabled = true;
 	document.getElementById('loader').style.display = 'block';
@@ -23,7 +31,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 		hiddenInput.disabled = true;
 		
 		card.appendChild(hiddenInput);
-		card.appendChild(document.createTextNode(p.name));
+		const cardText = `${p.name} (${formatDate(p.date_start)} - ${formatDate(p.date_end)})`;
+		card.appendChild(document.createTextNode(cardText));
 
 		// Add event listener to each project
 		card.addEventListener('click', () => {
