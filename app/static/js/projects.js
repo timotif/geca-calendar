@@ -31,9 +31,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 		hiddenInput.disabled = true;
 		
 		card.appendChild(hiddenInput);
-		const cardText = `${p.name} (${formatDate(p.date_start)} - ${formatDate(p.date_end)})`;
-		card.appendChild(document.createTextNode(cardText));
 
+		const contentWrapper = document.createElement('div');
+		contentWrapper.className = 'project-content';
+
+		const nameSpan = document.createElement('span');
+		nameSpan.className = 'project-name';
+		nameSpan.textContent = p.name;
+		
+		const dateSpan = document.createElement('span');
+		dateSpan.className = 'project-date';
+		dateSpan.textContent = `${formatDate(p.date_start)} - ${formatDate(p.date_end)}`;
+		
+		contentWrapper.appendChild(nameSpan);
+		contentWrapper.appendChild(dateSpan);
+		card.appendChild(contentWrapper);
+		
 		// Add event listener to each project
 		card.addEventListener('click', () => {
 			card.classList.toggle('selected');

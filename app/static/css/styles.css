@@ -69,6 +69,30 @@ body {
     transition: all 0.3s ease;
     cursor: pointer;
     user-select: none;
+	position: relative;
+    overflow: hidden;
+}
+
+.project-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.project-name {
+    margin: 0;
+}
+
+.project-date {
+    margin: 0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.project-card:hover .project-date {
+    opacity: 1;
 }
 
 .project-card:hover {
