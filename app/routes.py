@@ -3,6 +3,10 @@ from app.config import DIRECTORY
 calendar = Blueprint("calendar", __name__)
 
 @calendar.route("/")
+def index():
+	return render_template("index.html")
+
+@calendar.route("/all")
 def get_general_calendar():
 	dir, calendar_file = current_app.calendar.create_full_calendar()
 	return send_from_directory(dir, calendar_file)

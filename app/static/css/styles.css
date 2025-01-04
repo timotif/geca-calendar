@@ -32,6 +32,51 @@ body {
     flex-direction: column;
 }
 
+/* index.html */
+
+.welcome-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.option-card {
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 15px;
+    padding: 2rem;
+    height: 100%;
+    color: white;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.option-card:hover {
+    transform: translateY(-5px);
+}
+
+.steps-list {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0;
+    text-align: left;
+}
+
+.steps-list li {
+    margin-bottom: 0.5rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.steps-list li:before {
+    content: "→";
+    position: absolute;
+    left: 0;
+}
+
+/* projects.html */
+
 .container {
     flex: 1;
     padding-bottom: 60px; /* Adjust based on footer height */
