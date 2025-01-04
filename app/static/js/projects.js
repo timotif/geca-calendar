@@ -5,12 +5,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 	// Fetch projects
 	const response = await fetch('/fetch_projects');
 	const data = await response.json();
-	const projectsList = document.getElementById('projects-list');
+	const projectGrid = document.getElementById('projects-grid');
 
 	for (const p of data) {
-		const li = document.createElement('li');
-		li.className = "list-group-item d-flex justify-content-between align-items-center";
-		li.dataset.id = p.id;
+		const col = document.createElement('div');
+		col.className = 'col-md-6 mb-3';
+		
+		const card = document.createElement('div');
+		card.className = 'card project-card';
+		card.dataset.id = p.id;
 
 		// Create hidden input to store selected projects
 		const hiddenInput = document.createElement('input');
@@ -19,18 +22,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 		hiddenInput.value = p.id;
 		hiddenInput.disabled = true;
 		
-		li.appendChild(hiddenInput);
-		li.appendChild(document.createTextNode(p.name));
+		card.appendChild(hiddenInput);
+		card.appendChild(document.createTextNode(p.name));
 
 		// Add event listener to each project
-		li.addEventListener('click', () => {
-			li.classList.toggle('selected');
+		card.addEventListener('click', () => {
+			card.classList.toggle('selected');
 			hiddenInput.disabled = !hiddenInput.disabled;
 		});
-		projectsList.appendChild(li);
+		col.appendChild(card);
+		projectGrid.appendChild(col);
 	}
-	const projects = document.getElementById('projects-form');
-	projects.appendChild(projectsList);
 	document.getElementById('loader').style.display = 'none';
 	document.getElementById('projects').style.display = 'block';
 	btn.disabled = false;

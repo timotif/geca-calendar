@@ -7,9 +7,11 @@
 <div id="loader">Loading...</div>
 <div id="projects" style="display: none;">
     <form action="/projects" method="post" id="projects-form">
-        <ul id="projects-list" class="list-group">
-            <!-- List populated in JS -->
-        </ul>
+        <div class="projects-container">
+            <div id="projects-grid" class="row">
+                <!-- Grid populated in JS -->
+            </div>
+        </div>
         <button type="submit" class="btn btn-primary mt-4 submit-list">Submit</button>
     </form>
 </div>
