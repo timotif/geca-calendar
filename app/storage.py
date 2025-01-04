@@ -73,9 +73,10 @@ class ProjectRepository(StorageInterface):
 		calendar = CalendarHash.query.filter_by(hash=hash).first()
 		if not calendar:
 			calendar = CalendarHash(hash=hash)
-		self.db.session.add(calendar)
-		for project_id in project_ids:
-			project = ProjectDb.query.get(project_id)
-			if project:
-				calendar.projects.append(project)
+			self.db.session.add(calendar)
+			for project_id in project_ids:
+				project = ProjectDb.query.get(project_id)
+				if project:
+					calendar.projects.append(project)
+		calendar.last_edited = datetime.now()
 		self.db.session.commit()
