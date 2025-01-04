@@ -75,6 +75,7 @@ class CalendarHash(db.Model):
 		secondary=custom_calendar, 
 		back_populates='custom_calendars'
 		)
+	last_edited = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
 	
 	def save(self):
 		db.session.add(self)
