@@ -75,6 +75,31 @@ body {
     left: 0;
 }
 
+.url-container .form-control {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-family: monospace;
+    font-size: 0.9em;
+    letter-spacing: 0.5px;
+    padding: 0.75rem;
+}
+
+.url-container .form-control:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #fff;
+    box-shadow: none;
+}
+
+.url-container .form-control::selection {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.url-container .input-group-append .btn {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
 /* projects.html */
 
 .container {
