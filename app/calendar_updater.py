@@ -1,9 +1,9 @@
 import os
 import dotenv
-from app.logging_config import logger
-from app.notion_client import NotionDataSource
-from app.calendar_generator import ICSCalendarGenerator
-from app.config import DIRECTORY, FILENAME
+from logging_config import logger
+from notion_client import NotionDataSource
+from calendar_generator import ICSCalendarGenerator
+from config import DIRECTORY, FILENAME
 
 ENV_FILE = ".env"
 

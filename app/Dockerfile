@@ -12,4 +12,6 @@ COPY . /app/
 RUN pip install --upgrade pip
 RUN pip install -r app/requirements.txt
 
-CMD ["gunicorn", "-b", "0.0.0.0:8001", "app.app:app"]
+WORKDIR /app
+
+CMD ["gunicorn", "-b", "0.0.0.0:8001", "app:app"]

@@ -2,8 +2,8 @@ import os
 from datetime import datetime
 import hashlib
 import base64
-from app.config import UPDATE_EVERY, DIRECTORY
-from app.logging_config import logger
+from config import UPDATE_EVERY, DIRECTORY
+from logging_config import logger
 
 LAST_UPDATE = None
 

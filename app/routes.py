@@ -1,5 +1,5 @@
 from flask import Blueprint, current_app, render_template, send_from_directory, jsonify, request, url_for
-from app.config import DIRECTORY
+from config import DIRECTORY
 calendar = Blueprint("calendar", __name__)
 
 @calendar.route("/")
