@@ -61,7 +61,8 @@ def create_app(config=None):
 		logger.error(f"Configuration error: {e}")
 		sys.exit(1)
 
+app = create_app()
+
 # Local mode
 if __name__ == "__main__":
-	app = create_app()
 	app.run(host="0.0.0.0", port=8080)
