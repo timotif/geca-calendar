@@ -3,6 +3,8 @@ NAME = geca-calendar
 PORT = 8001
 APP_PATH = ./app
 ENV_FILE = .env
+DB_PATH = /var/lib/geca_calendar
+LOG_PATH = /var/log/geca_calendar
 
 all: help
 
@@ -13,8 +15,8 @@ run:
 	@docker run -d --rm \
 	--env-file $(ENV_FILE) \
 	-p $(PORT):$(PORT) \
-	-v /var/log/geca_calendar:/app/log \
-	-v $(PWD)/instance:/app/instance \
+	-v $(DB_PATH):/app/instance \
+	-v $(LOG_PATH):/app/log \
 	--name $(NAME) $(IMG) 
 
 stop:
