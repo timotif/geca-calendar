@@ -16,6 +16,7 @@ class ProjectDTO:
 	"""
 	id: str
 	name: str
+	# TODO: Handle date format through the app
 	date_start: str
 	date_end: str
 	url: str = ""

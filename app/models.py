@@ -51,8 +51,8 @@ class ProjectDb(db.Model):
 		return ProjectDTO(
 			id = self.id,
 			name = self.name,
-			date_start=self.date_start,
-			date_end=self.date_end,
+			date_start=self.date_start.isoformat(),
+			date_end=self.date_end.isoformat(),
 			url=self.url,
 			seating=self.seating
 		)
