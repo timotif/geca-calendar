@@ -59,8 +59,9 @@ class CalendarService():
 		for hash in custom_calendars:
 			projects = self.db.get_projects_by_hash(hash.hash)
 			for project in projects:
-				if project.last_edited > hash.last_edited:
-					logger.debug(f"Updating calendar {hash.hash}")
+				if not os.path.exists(os.path.join(self.directory, f"{hash.hash}.ics")) or \
+				project.last_edited > hash.last_edited:
+					logger.debug(f"Updating calendar {hash.hash} with projects {projects}")
 					self.create_custom_calendar([p.id for p in projects])
 					break
 
