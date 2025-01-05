@@ -24,7 +24,6 @@ class ICSCalendarGenerator(CalendarGeneratorInterface):
 	def __init__(self, filename: str=FILENAME):
 		self.filename = filename
 		self.events = set()
-		self.calendar = Calendar()
 
 	def __add_event(self, event: dict) -> Event:
 		e = Event()
@@ -37,21 +36,22 @@ class ICSCalendarGenerator(CalendarGeneratorInterface):
 		self.events.add(e)
 		return e
 
-	def __add_to_calendar(self, event: Event) -> None:
-		self.calendar.events.add(event)
+	# def __add_to_calendar(self, calendar: Calendar, event: Event) -> None:
+	# 	calendar.events.add(event)
 
-	def __save(self, filename="") -> None:
+	def __save(self, calendar: Calendar, filename="") -> None:
 		if not filename:
 			filename = self.filename
 		logger.info(f"Saving calendar to {filename}")
-		with open(f'{filename}', 'w') as my_file:
-			my_file.writelines(self.calendar.serialize_iter())
+		with open(filename, 'w') as my_file:
+			my_file.writelines(calendar.serialize_iter())
 
 	def generate(self, events: list[dict], filename: str="") -> None:
+		calendar = Calendar()
 		if not filename:
 			filename = self.filename
 		for event in events:
 			new_event = self.__add_event(event)
-			self.__add_to_calendar(new_event)
-		self.__save(filename)
+			calendar.events.add(new_event)
+		self.__save(calendar, filename)
 
