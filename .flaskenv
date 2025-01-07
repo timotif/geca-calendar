@@ -1,1 +1,1 @@
-FLASK_APP=app.app:create_app
+FLASK_APP=app.app:app

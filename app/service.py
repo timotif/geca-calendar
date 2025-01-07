@@ -2,8 +2,8 @@ import os
 from datetime import datetime
 import hashlib
 import base64
-from app.config import UPDATE_EVERY, DIRECTORY
-from app.logging_config import logger
+from config import UPDATE_EVERY, DIRECTORY
+from logging_config import logger
 
 LAST_UPDATE = None
 
@@ -54,13 +54,18 @@ class CalendarService():
 	def update_custom_calendars(self,  hashes: list[str]=None):
 		if not self.is_calendar_up_to_date():
 			self.update_calendar()
+		# If no specific hash is passed, update all custom
 		custom_calendars = self.db.get_all_hashes() if not hashes \
 			else [self.db.get_by_hash(hash) for hash in hashes]
 		for hash in custom_calendars:
 			projects = self.db.get_projects_by_hash(hash.hash)
+			if not os.path.exists(os.path.join(self.directory, f"{hash.hash}.ics")):
+				logger.debug(f"File {hash.hash}.ics doesn't exist: creating")
+				self.create_custom_calendar([p.id for p in projects])
+				continue
 			for project in projects:
 				if project.last_edited > hash.last_edited:
-					logger.debug(f"Updating calendar {hash.hash}")
+					logger.debug(f"Updating calendar {hash.hash} with projects {projects}")
 					self.create_custom_calendar([p.id for p in projects])
 					break
 

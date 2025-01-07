@@ -1,13 +1,13 @@
-from app.config import DevConfig, ProdConfig, ConfigError, validate_config
-from flask import Flask
-from app.database import get_db
-from app.routes import calendar
-from app.notion_client import NotionDataSource
-from app.storage import ProjectRepository
-from app.calendar_generator import ICSCalendarGenerator
-from app.service import CalendarService
 import sys
-from app.logging_config import logger
+from flask import Flask
+from config import DevConfig, ProdConfig, ConfigError, validate_config
+from database import get_db
+from routes import calendar
+from notion_client import NotionDataSource
+from storage import ProjectRepository
+from calendar_generator import ICSCalendarGenerator
+from service import CalendarService
+from logging_config import logger
 
 def create_app(config=None):
 	"""
@@ -61,7 +61,8 @@ def create_app(config=None):
 		logger.error(f"Configuration error: {e}")
 		sys.exit(1)
 
+app = create_app()
+
 # Local mode
 if __name__ == "__main__":
-	app = create_app()
 	app.run(host="0.0.0.0", port=8080)

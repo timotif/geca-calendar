@@ -2,9 +2,9 @@ import requests
 from datetime import timezone
 import dateutil.parser
 from dateutil import tz
-from app.interfaces import DataSourceInterface
-from app.logging_config import logger
-from app.data_transfer_objects import ProjectDTO
+from interfaces import DataSourceInterface
+from logging_config import logger
+from data_transfer_objects import ProjectDTO
 
 class NotionReader():
 	"""Base class for Notion API readers"""
