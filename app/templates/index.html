@@ -16,14 +16,14 @@
 					<label for="full-calendar-url" class="h5 mb-3">Calendar URL:</label>
 					<div class="input-group">
 						<input type="text" 
-							   id="full-calendar-url" 
+							   id="calendar-url" 
 							   class="form-control" 
 							   value="{{ url_for('calendar.get_general_calendar', _external=True) }}"
 							   readonly>
 						<div class="input-group-append">
 							<button class="btn btn-primary px-4" 
-									onclick="copyFullUrl()" 
-									id="copy-full-button">
+									onclick="copyUrl()" 
+									id="copy-button">
 								Copy URL
 							</button>
 						</div>
@@ -46,20 +46,4 @@
         </div>
     </div>
 </div>
-<script>
-	function copyFullUrl() {
-    const urlInput = document.getElementById('full-calendar-url');
-    urlInput.select();
-    document.execCommand('copy');
-    
-    const button = document.getElementById('copy-full-button');
-    button.textContent = 'Copied!';
-    button.classList.add('btn-success');
-    
-    setTimeout(() => {
-        button.textContent = 'Copy URL';
-        button.classList.remove('btn-success');
-    }, 2000);
-}
-</script>
 {% endblock %}

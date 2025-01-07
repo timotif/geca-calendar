@@ -1,13 +1,3 @@
-document.addEventListener('DOMContentLoaded', async () => {
-    // Auto download calendar
-    const filename = document.getElementById('calendar-url').value;
-    const a = document.createElement('a');
-    a.href = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-});
-
 function copyUrl() {
     const urlInput = document.getElementById('calendar-url');
     urlInput.select();
