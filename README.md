@@ -2,23 +2,32 @@
 This is a Python dockerized webapp that handles a subscription calendar for [Geneva Camerata](https://genevacamerata.com/en) events
 
 ## Features
-
 - Fetch and sync calendar data from Notion
 - Subscribe to calendar (public and private URLs)
 - Save calendars locally in ICS format
 - Generate customized calendars based on project selection
 - Track data changes to minimize API calls
 - Support for seating arrangements and project URLs
+- Responsive web interface
 
 ## What's new in v2.0
-- **Handles custom calendars with a subset of projects**
-- Fully rewritten from scratch with modern Python practices
-- SQLite database for persistent data storage
-- Smart sync with modification tracking
-- Object-oriented architecture with DTOs
-- Modular design for better maintainability
-- Support for additional project metadata (URLs, seating)
-- Improved error handling and validation
+- **Interactive web interface for calendar customization**
+  - Select between full or custom calendar
+  - Visual project cards with dates and details
+  - Real-time selection and filtering
+  - Mobile-friendly design
+- **Enhanced calendar management**
+  - Custom calendar generation with selected projects
+  - ICS format support for local saving
+  - Real-time updates and sync
+- **Improved backend architecture**
+  - Fully rewritten with modern Python practices
+  - SQLite database for persistent storage
+  - Smart sync with modification tracking
+  - Object-oriented architecture with DTOs
+  - Modular design for maintainability
+  - Robust error handling and validation
+  - Docker containerization
 
 ## Getting Started
 
