@@ -3,17 +3,22 @@ This is a Python dockerized webapp that handles a subscription calendar for [Gen
 
 ## Features
 
-- Fetch calendar data from Notion
-- Subscribe to calendar
+- Fetch and sync calendar data from Notion
+- Subscribe to calendar (public and private URLs)
 - Save calendars locally in ICS format
+- Generate customized calendars based on project selection
+- Track data changes to minimize API calls
+- Support for seating arrangements and project URLs
 
 ## What's new in v2.0
 - **Handles custom calendars with a subset of projects**
-- Fully rewritten from scratch
-- Persisting data in a database
-- Checking if projects are already up to date in the database to minimize API calls
-- More object oriented
-- More modular approach
+- Fully rewritten from scratch with modern Python practices
+- SQLite database for persistent data storage
+- Smart sync with modification tracking
+- Object-oriented architecture with DTOs
+- Modular design for better maintainability
+- Support for additional project metadata (URLs, seating)
+- Improved error handling and validation
 
 ## Getting Started
 
@@ -21,8 +26,10 @@ This is a Python dockerized webapp that handles a subscription calendar for [Gen
 
 - Python 3.x
 - Notion API token
+- SQLite3
 - *(For local mode)* Virtual environment (venv)
 - .env file (see env_template)
+- Docker (optional for containerized deployment)
 
 ### Create Notion integration token
 - Settings and members
