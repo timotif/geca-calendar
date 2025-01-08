@@ -37,6 +37,8 @@ def get_custom_calendar(filename):
 		return send_from_directory(DIRECTORY, filename)
 	except FileNotFoundError:
 		return page_not_found()
+	except Exception as e:
+		return internal_error(), 500
 
 @calendar.errorhandler(400)
 def bad_request():
@@ -44,8 +46,12 @@ def bad_request():
 
 @calendar.errorhandler(403)
 def auth_required():
-		return "You're not authorized to get this file", 403
+		return render_template('error_pages/403.html'), 403
 
 @calendar.errorhandler(404)
 def page_not_found():
 	return "I couldn't find the requested resource", 404
+
+@calendar.errorhandler(500)
+def internal_error():
+	return render_template('error_pages/500.html'), 500

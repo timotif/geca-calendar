@@ -1,0 +1,10 @@
+{% extends "error_pages/error_base.html" %}
+{% block title %}Server Error{% endblock %}
+{% block error_content %}
+<div class="error-container">
+  <i class="bi bi-bug-fill display-1 mb-4"></i>
+  <h1>500: Crashed and Burned</h1>
+  <p>Something epic happened behind the scenes. We're on it!</p>
+  <a class="btn btn-primary" href="{{ url_for('calendar.index') }}">Take Me Home</a>
+</div>
+{% endblock %}

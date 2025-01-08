@@ -1,0 +1,10 @@
+{% extends "error_pages/error_base.html" %}
+{% block title %}Page Not Found{% endblock %}
+{% block error_content %}
+<div class="error-container">
+  <i class="bi bi-question-circle-fill display-1 mb-4"></i>
+  <h1>404: We Got Nothing</h1>
+  <p>It seems you've discovered a hidden black hole! No page here...</p>
+  <a class="btn btn-primary" href="{{ url_for('calendar.index') }}">Take Me Home</a>
+</div>
+{% endblock %}
