@@ -57,6 +57,8 @@ class CalendarService():
 		# If no specific hash is passed, update all custom
 		custom_calendars = self.db.get_all_hashes() if not hashes \
 			else [self.db.get_by_hash(hash) for hash in hashes]
+		if custom_calendars[0] == None:
+			raise ValueError(f"No custom calendars found: {hashes}")
 		for hash in custom_calendars:
 			projects = self.db.get_projects_by_hash(hash.hash)
 			if not os.path.exists(os.path.join(self.directory, f"{hash.hash}.ics")):

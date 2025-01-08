@@ -39,8 +39,8 @@ class ProjectRepository(StorageInterface):
 		return self.db.session.get(ProjectDb, id)
 
 	def get_by_hash(self, hash: str):
-		return CalendarHash.query.get(hash)
-
+		return self.db.session.query(CalendarHash).filter_by(hash=hash).first()
+	
 	def get_projects_by_hash(self, hash: str):
 		calendar_hash = self.get_by_hash(hash)
 		if calendar_hash:

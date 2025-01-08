@@ -1,33 +1,50 @@
 from flask import Blueprint, current_app, render_template, send_from_directory, jsonify, request, url_for
 from config import DIRECTORY
+from logging_config import logger
+
 calendar = Blueprint("calendar", __name__)
 
 @calendar.route("/")
 def index():
-	return render_template("index.html")
+	try:
+		return render_template("index.html")
+	except Exception as e:
+		logger.error(e)
+		return internal_error()
 
 @calendar.route("/all")
 def get_general_calendar():
-	dir, calendar_file = current_app.calendar.create_full_calendar()
-	return send_from_directory(dir, calendar_file)
+	try:
+		dir, calendar_file = current_app.calendar.create_full_calendar()
+		return send_from_directory(dir, calendar_file)
+	except Exception as e:
+		logger.error(e)
+		return internal_error()
 
 @calendar.route("/fetch_projects")
 def fetch_projects():
-	projects = current_app.calendar.update_calendar()
-	projects.sort(key=lambda x: x.date_start)
-	return jsonify(projects)
+	try:
+		projects = current_app.calendar.update_calendar()
+		projects.sort(key=lambda x: x.date_start)
+		return jsonify(projects)
+	except Exception as e:
+		logger.error(e)
+		return internal_error()
 
 @calendar.route("/projects", methods=["GET", "POST"])
 def custom_calendar():
 	if request.method == "GET":
 		return render_template("projects.html")
 	# POST method
-	calendar_file = current_app.calendar.create_custom_calendar(request.form.getlist('selected_projects'))
-	if calendar_file:
-		full_url = url_for("calendar.get_custom_calendar", filename=calendar_file, _external=True)
-		return render_template("custom.html", url=full_url)
-	return bad_request()
-
+	try:
+		calendar_file = current_app.calendar.create_custom_calendar(request.form.getlist('selected_projects'))
+		if calendar_file:
+			full_url = url_for("calendar.get_custom_calendar", filename=calendar_file, _external=True)
+			return render_template("custom.html", url=full_url)
+		return bad_request()
+	except Exception as e:
+		logger.error(e)
+		return internal_error()
 @calendar.route("/<path:filename>")
 def get_custom_calendar(filename):
 	if not filename.endswith(".ics"):
@@ -38,19 +55,20 @@ def get_custom_calendar(filename):
 	except FileNotFoundError:
 		return page_not_found()
 	except Exception as e:
-		return internal_error(), 500
+		logger.error(e)
+		return internal_error()
 
 @calendar.errorhandler(400)
 def bad_request():
-		return "Bad request", 400
+	return render_template('error_pages/400.html'), 400
 
 @calendar.errorhandler(403)
 def auth_required():
-		return render_template('error_pages/403.html'), 403
+	return render_template('error_pages/403.html'), 403
 
 @calendar.errorhandler(404)
 def page_not_found():
-	return "I couldn't find the requested resource", 404
+	return render_template('error_pages/404.html'), 404
 
 @calendar.errorhandler(500)
 def internal_error():
