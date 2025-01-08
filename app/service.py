@@ -78,7 +78,8 @@ class CalendarService():
 		# Identify outdated or missing projects and fetch just those 
 		outdated_projects, data = self.update_projects(projects)
 		assert len(outdated_projects) + len(data) == len(projects)
-		logger.debug(f"Outdated projects: {len(outdated_projects)}")
+		if len(outdated_projects) > 0:
+			logger.info(f"Updated {len(outdated_projects)} projects: {[p.name for p in outdated_projects]}")
 		data += outdated_projects
 		self.last_update = datetime.now()
 		return data
