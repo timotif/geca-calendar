@@ -62,10 +62,9 @@ def fetch_seating_order(seating_blocks: dict, data: json) -> str:
             # Searching the blocks of the seating page
             block = data['results'][i]
             type = block['type']
-            if type == 'heading_3': # Section name
-                seating += block[type]['rich_text'][0]['plain_text'] + ":\n"
-            elif block['type'] == 'paragraph' and len(block['paragraph']['rich_text']) != 0:
-                seating += block['paragraph']['rich_text'][0]['plain_text'] + "\n" # Section list
+            if type == 'paragraph':
+                for text in block['paragraph']['rich_text']:
+                    seating += text['plain_text'] + "\n" # Section list
         seating_parsed += f"{key}\n{seating}\n"
     return seating_parsed
     
