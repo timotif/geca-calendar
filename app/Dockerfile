@@ -14,4 +14,7 @@ RUN pip install -r app/requirements.txt
 
 WORKDIR /app
 
-CMD ["gunicorn", "-b", "0.0.0.0:8001", "app:app"]
+ARG PORT=8001
+ENV PORT=${PORT}
+
+CMD ["sh", "-c", "gunicorn -b 0.0.0.0:${PORT} app:app"]

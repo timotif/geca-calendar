@@ -9,11 +9,12 @@ LOG_PATH = /var/log/geca_calendar
 all: help
 
 build:
-	docker build -t $(IMG) $(APP_PATH)
+	docker build -t $(IMG) $(APP_PATH) --build-arg PORT=$(PORT)
 
 run:
 	@docker run -d --rm \
 	--env-file $(ENV_FILE) \
+	--env PORT=$(PORT) \
 	-p $(PORT):$(PORT) \
 	-v $(DB_PATH):/app/instance \
 	-v $(LOG_PATH):/app/log \
