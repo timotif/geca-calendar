@@ -6,4 +6,4 @@ if [ -f .env ]; then
     export $(cat .env | xargs)
 fi
 
-python -m ${CALENDAR_MODULE}.calendar_updater
+python ${CALENDAR_MODULE}/calendar_updater.py
