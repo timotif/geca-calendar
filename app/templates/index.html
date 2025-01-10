@@ -18,7 +18,7 @@
 						<input type="text" 
 							   id="calendar-url" 
 							   class="form-control" 
-							   value="{{ url_for('calendar.get_general_calendar', _external=True) }}"
+							   value="{{ url_for('calendar.get_general_calendar', _scheme='https', _external=True) }}"
 							   readonly>
 						<div class="input-group-append">
 							<button class="btn btn-primary px-4" 
