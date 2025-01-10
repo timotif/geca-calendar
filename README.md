@@ -127,7 +127,7 @@ make fclean
    ./update_calendar.sh
    ```
 
-The calendar file in ICS format will be saved in the root folder.
+The calendar file in ICS format will be saved in the _calendars_ subfolder.
 
 ## Help
 
