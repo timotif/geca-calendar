@@ -73,6 +73,12 @@ class NotionDataSource(DataSourceInterface):
 			(block['paragraph']['rich_text'][0]['plain_text'].lower() == "seating positions" or \
 			block['paragraph']['rich_text'][0]['plain_text'].lower() == "seating position")
 
+	def __is_repertoire_block(self, block: dict) -> bool: 
+		program_headers = ["program", "programme", "programs", "repertoire"]
+		return block['type'] == 'paragraph' and \
+			len(block['paragraph']['rich_text']) != 0 and \
+			block['paragraph']['rich_text'][0]['plain_text'].lower() in program_headers
+
 	def __is_divider(self, block: dict) -> bool: # TODO: error handling
 		return block['type'] == 'divider'
 
@@ -143,7 +149,27 @@ class NotionDataSource(DataSourceInterface):
 		last_edited_utc = dateutil.parser.parse(project['last_edited_time'])
 		local_tz = tz.tzlocal()
 		# Discarding timezone info to allow comparison with location naive datetime in ProjectService.__is_project_up_to_date
-		return last_edited_utc.astimezone(local_tz).replace(tzinfo=None) 
+		return last_edited_utc.astimezone(local_tz).replace(tzinfo=None)
+	
+	def __extract_repertoire_from_blocks(self, project_blocks: list[dict]) -> str:
+		repertoire = ""
+		blocks = iter(project_blocks)
+		for block in blocks:
+			if self.__is_repertoire_block(block):
+				type = block['type']
+				print("Repertoire found")
+				text = [t['plain_text'] for t in block[type]['rich_text']]
+				# Extract rep from blocks
+				repertoire = "\n".join(text) + "\n"
+				block = next(blocks, None)
+				while block and not self.__is_divider(block):
+					type = block['type']
+					try:
+						repertoire += " ".join([t['plain_text'] for t in block[type]['rich_text'] if not self.__is_divider(block)]) + "\n"
+					except KeyError:
+						print("KeyError triggered. Type: ", type)
+					block = next(blocks, None)
+		return repertoire
 
 	def fetch_project(self, project: dict):
 		"""
@@ -160,6 +186,7 @@ class NotionDataSource(DataSourceInterface):
 		"""
 
 		project['blocks'] = self.__fetch_project_blocks(project) # Blocks in project
+		project['repertoire'] = self.__extract_repertoire_from_blocks(project['blocks'])
 		project['seating'] = self.__extract_seating_from_blocks(project['blocks']) # Parse blocks to find seating
 
 	def fetch_projects(self):
