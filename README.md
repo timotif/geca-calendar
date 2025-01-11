@@ -1,6 +1,11 @@
 # GECA Calendar v2.0
 This is a Python dockerized webapp that handles a subscription calendar for [Geneva Camerata](https://genevacamerata.com/en) events
 
+## Screenshots
+### Main Calendar View
+
+### Project Management
+
 ## Features
 - Fetch and sync calendar data from Notion
 - Subscribe to calendar (public and private URLs)
@@ -13,8 +18,10 @@ This is a Python dockerized webapp that handles a subscription calendar for [Gen
 ## What's new in v2.0
 - **Interactive web interface for calendar customization**
   - Select between full or custom calendar
+![Main Page](screenshots/main_page.png)
   - Visual project cards with dates and details
   - Real-time selection and filtering
+![Project Page](screenshots/projects_page.gif)
   - Mobile-friendly design
 - **Enhanced calendar management**
   - Custom calendar generation with selected projects
@@ -120,7 +127,7 @@ make fclean
    ./update_calendar.sh
    ```
 
-The calendar file in ICS format will be saved in the root folder.
+The calendar file in ICS format will be saved in the _calendars_ subfolder.
 
 ## Help
 

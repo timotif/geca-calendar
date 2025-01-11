@@ -39,7 +39,7 @@ def custom_calendar():
 		# POST method
 		calendar_file = current_app.calendar.create_custom_calendar(request.form.getlist('selected_projects'))
 		if calendar_file:
-			full_url = url_for("calendar.get_custom_calendar", filename=calendar_file, _external=True)
+			full_url = url_for("calendar.get_custom_calendar", filename=calendar_file, _scheme='https', _external=True)
 			return render_template("custom.html", url=full_url)
 		return bad_request()
 	except Exception as e:
