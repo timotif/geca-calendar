@@ -14,6 +14,7 @@ class ProjectDTO:
 		date_start (date): Start date of the project in date format
 		date_end (date): End date of the project in date format
 		url (str, optional): URL associated with the project. Defaults to empty string
+		repertoire (str, optional): Repertoire information for the project. Defaults to empty string
 		seating (str, optional): Seating information for the project. Defaults to empty string
 
 	Raises:
@@ -26,6 +27,7 @@ class ProjectDTO:
 	date_start: date
 	date_end: date
 	url: Optional[str] = None
+	repertoire: Optional[str] = None
 	seating: Optional[str] = None
 
 	def __post_init__(self):

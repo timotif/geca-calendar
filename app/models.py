@@ -18,6 +18,7 @@ class ProjectDb(db.Model):
 		date_start (Date): Start date of the project
 		date_end (Date): End date of the project
 		url (str, optional): URL associated with the project
+		repertoire (str, optional): Repertoire information for the project
 		seating (str, optional): Seating information for the project
 		custom_calendars (relationship): Relationship with CalendarHash through custom_calendar table
 	Methods:
@@ -32,6 +33,7 @@ class ProjectDb(db.Model):
 	date_start = db.Column(db.Date, nullable=False)
 	date_end = db.Column(db.Date, nullable=False)
 	url = db.Column(db.String(100), nullable=True)
+	repertoire = db.Column(db.String(5000), nullable=True)
 	seating = db.Column(db.String(5000), nullable=True)
 	custom_calendars = db.relationship(
 		"CalendarHash", 
@@ -54,7 +56,8 @@ class ProjectDb(db.Model):
 			date_start=self.date_start.isoformat(),
 			date_end=self.date_end.isoformat(),
 			url=self.url,
-			seating=self.seating
+			seating=self.seating,
+			repertoire=self.repertoire
 		)
 
 class CalendarHash(db.Model):

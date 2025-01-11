@@ -24,7 +24,7 @@ class NotionDatabaseReader(NotionReader, DataSourceInterface):
 		self.url = f"https://api.notion.com/v1/databases/{database_id}/query"
 
 	def fetch_data(self) -> list[dict]:
-		logger.debug("Fetching data from database")
+		logger.debug("Fetching data from database", end=' ')
 		response = requests.request("POST", self.url, headers=self.headers)
 		data = response.json()
 		logger.debug(f"Status code: {response.status_code}")
@@ -39,7 +39,7 @@ class NotionBlockChildrenReader(NotionReader, DataSourceInterface):
 		self.url = f"https://api.notion.com/v1/blocks/{page_id}/children"
 
 	def fetch_data(self) -> list[dict]:
-		logger.debug("Fetching data from block")
+		logger.debug("Fetching data from block", end=' ')
 		response = requests.request("GET", self.url, headers=self.headers)
 		data = response.json()
 		logger.debug(f"Status code: {response.status_code}")
@@ -74,10 +74,10 @@ class NotionDataSource(DataSourceInterface):
 			block['paragraph']['rich_text'][0]['plain_text'].lower() == "seating position")
 
 	def __is_repertoire_block(self, block: dict) -> bool: 
-		program_headers = ["program", "programme", "programs", "repertoire"]
+		repertoire_headers = ["program", "programme", "programs", "repertoire"]
 		return block['type'] == 'paragraph' and \
 			len(block['paragraph']['rich_text']) != 0 and \
-			block['paragraph']['rich_text'][0]['plain_text'].lower() in program_headers
+			block['paragraph']['rich_text'][0]['plain_text'].lower() in repertoire_headers
 
 	def __is_divider(self, block: dict) -> bool: # TODO: error handling
 		return block['type'] == 'divider'
@@ -132,6 +132,7 @@ class NotionDataSource(DataSourceInterface):
 			date_start=project['properties']['Date']['date']['start'],
 			date_end=project['properties']['Date']['date']['end'],
 			url=project['url'],
+			repertoire=project.get('repertoire'),
 			seating=self.__parse_seating(project.get('seating'))
 		)
 	
@@ -157,7 +158,6 @@ class NotionDataSource(DataSourceInterface):
 		for block in blocks:
 			if self.__is_repertoire_block(block):
 				type = block['type']
-				print("Repertoire found")
 				text = [t['plain_text'] for t in block[type]['rich_text']]
 				# Extract rep from blocks
 				repertoire = "\n".join(text) + "\n"
@@ -167,7 +167,7 @@ class NotionDataSource(DataSourceInterface):
 					try:
 						repertoire += " ".join([t['plain_text'] for t in block[type]['rich_text'] if not self.__is_divider(block)]) + "\n"
 					except KeyError:
-						print("KeyError triggered. Type: ", type)
+						pass
 					block = next(blocks, None)
 		return repertoire
 
@@ -182,11 +182,12 @@ class NotionDataSource(DataSourceInterface):
 		Returns:
 			None: The method modifies the project dictionary in-place by adding:
 				- 'blocks': List of blocks contained in the project
+				- 'repertoire': Repertoire information extracted from blocks
 				- 'seating': Seating information extracted from blocks
 		"""
 
 		project['blocks'] = self.__fetch_project_blocks(project) # Blocks in project
-		project['repertoire'] = self.__extract_repertoire_from_blocks(project['blocks'])
+		project['repertoire'] = self.__extract_repertoire_from_blocks(project['blocks']) # Parse blocks to find repertoire
 		project['seating'] = self.__extract_seating_from_blocks(project['blocks']) # Parse blocks to find seating
 
 	def fetch_projects(self):

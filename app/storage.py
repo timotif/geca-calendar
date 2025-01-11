@@ -57,6 +57,7 @@ class ProjectRepository(StorageInterface):
 			date_start=datetime.strptime(project.date_start, "%Y-%m-%d"),
 			date_end=datetime.strptime(project.date_end, "%Y-%m-%d"),
 			url=project.url,
+			repertoire=project.repertoire,
 			seating=project.seating
 		)
 		self.db.session.add(p)
@@ -67,6 +68,7 @@ class ProjectRepository(StorageInterface):
 		project.date_start = datetime.strptime(project_dto.date_start, "%Y-%m-%d")
 		project.date_end = datetime.strptime(project_dto.date_end, "%Y-%m-%d")
 		project.url = project_dto.url
+		project.repertoire = project_dto.repertoire
 		project.seating = project_dto.seating
 
 	def save_custom_calendar(self, hash: str, project_ids: list[str]):
