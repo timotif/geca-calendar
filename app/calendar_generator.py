@@ -31,7 +31,7 @@ class ICSCalendarGenerator(CalendarGeneratorInterface):
 		e.begin = event.date_start
 		e.end = event.date_end
 		e.url = event.url
-		e.description = str(event.seating)
+		e.description = f"{e.url}\n\n{str(event.seating)}"
 		e.make_all_day()
 		self.events.add(e)
 		return e
