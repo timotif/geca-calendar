@@ -25,23 +25,24 @@ class ICSCalendarGenerator(CalendarGeneratorInterface):
 		self.filename = filename
 		self.events = set()
 
-	def __add_event(self, event: dict) -> Event:
+	def __populate_description(self, event: dict, repertoire: bool, seating: bool) -> str:
+		description = f"{event.url}\n\n"
+		if repertoire:
+			description += f"{str(event.repertoire)}\n\n"
+		if seating:
+			description += f"{str(event.seating)}"
+		return description
+
+	def __add_event(self, event: dict, repertoire=True, seating=True) -> Event:
 		e = Event()
 		e.name = event.name
 		e.begin = event.date_start
 		e.end = event.date_end
 		e.url = event.url
-		description = \
-			f"{e.url}\n\n" + \
-			f"{str(event.repertoire)}\n\n" + \
-			f"{str(event.seating)}"
-		e.description = description
+		e.description = self.__populate_description(event, repertoire, seating)
 		e.make_all_day()
 		self.events.add(e)
 		return e
-
-	# def __add_to_calendar(self, calendar: Calendar, event: Event) -> None:
-	# 	calendar.events.add(event)
 
 	def __save(self, calendar: Calendar, filename="") -> None:
 		if not filename:
