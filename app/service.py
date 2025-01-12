@@ -31,7 +31,11 @@ class CalendarService():
 		self.directory = DIRECTORY
 	
 	def is_calendar_up_to_date(self):
-		return self.last_update is not None and datetime.now() - self.last_update < UPDATE_EVERY
+		logger.debug(f"Projects stored on db: {self.db.get_all()}")
+		return self.db.exists() and \
+			self.last_update is not None \
+			and datetime.now() - self.last_update < UPDATE_EVERY \
+			and self.db.get_all() != []
 
 	def __is_project_up_to_date(self, project):
 		last_edited = self.data_source.project_last_updated(project)
@@ -49,6 +53,7 @@ class CalendarService():
 				fetched_projects.append(self.db.get_by_id(p['id']).to_project_dto())
 		# Save updated projects to database
 		self.db.save(updated_projects)
+		logger.debug(f"Outdated projects: {updated_projects} ({len(updated_projects)} in total)")
 		return updated_projects, fetched_projects
 
 	def update_custom_calendars(self,  hashes: list[str]=None):
@@ -67,18 +72,16 @@ class CalendarService():
 				continue
 			for project in projects:
 				if project.last_edited > hash.last_edited:
-					logger.debug(f"Updating calendar {hash.hash} with projects {projects}")
 					self.create_custom_calendar([p.id for p in projects])
 					break
 
 	def update_calendar(self):
 		# Fetch projects from notion calendar
 		projects = self.data_source.fetch_projects()
-		logger.debug(f"Fetched {len(projects)} projects")
+		logger.debug(f"Fetched {len(projects)} projects from Notion database")
 		# Identify outdated or missing projects and fetch just those 
 		outdated_projects, data = self.update_projects(projects)
 		assert len(outdated_projects) + len(data) == len(projects)
-		logger.debug(f"Outdated projects: {len(outdated_projects)}")
 		data += outdated_projects
 		self.last_update = datetime.now()
 		return data
@@ -92,7 +95,7 @@ class CalendarService():
 	
 	def create_full_calendar(self) -> tuple[str, str]:
 		path = os.path.join(self.directory, self.ics_handler.filename)
-		if not (self.is_calendar_up_to_date() and os.path.exists(path)):
+		if not (self.is_calendar_up_to_date() or not os.path.exists(path)):
 			data = self.update_calendar()
 			self.ics_handler.generate(data, path)
 		return self.directory, self.ics_handler.filename
