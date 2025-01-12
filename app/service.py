@@ -30,9 +30,15 @@ class CalendarService():
 		self.last_update = LAST_UPDATE
 		self.directory = DIRECTORY
 	
+	def database_exists(self) -> bool:
+		exists = self.db.exists()
+		if not exists:
+			raise FileNotFoundError("Database corrupted: restart webapp")
+		return True
+
 	def is_calendar_up_to_date(self):
 		logger.debug(f"Projects stored on db: {self.db.get_all()}")
-		return self.db.exists() and \
+		return self.database_exists() and \
 			self.last_update is not None \
 			and datetime.now() - self.last_update < UPDATE_EVERY \
 			and self.db.get_all() != []
@@ -40,20 +46,20 @@ class CalendarService():
 	def __is_project_up_to_date(self, project):
 		last_edited = self.data_source.project_last_updated(project)
 		project_db = self.db.get_by_id(project['id'])
-		return project_db and project_db.last_edited >= last_edited
+		return self.database_exists() and project_db and project_db.last_edited >= last_edited
 
-	def update_projects(self, projects: list) -> tuple[list, list]:
+	def update_projects(self, projects: list, force_update=False) -> tuple[list, list]:	
 		updated_projects = []
 		fetched_projects = []
 		for p in projects:
-			if not self.__is_project_up_to_date(p):
+			if force_update or not self.__is_project_up_to_date(p):
 				self.data_source.fetch_project(p)
 				updated_projects.append(self.data_source.to_project_dto(p))
 			else:
 				fetched_projects.append(self.db.get_by_id(p['id']).to_project_dto())
 		# Save updated projects to database
 		self.db.save(updated_projects)
-		logger.debug(f"Outdated projects: {updated_projects} ({len(updated_projects)} in total)")
+		logger.debug(f"Outdated projects: {[p.name for p in updated_projects]} ({len(updated_projects)} in total)")
 		return updated_projects, fetched_projects
 
 	def update_custom_calendars(self,  hashes: list[str]=None):
@@ -75,12 +81,12 @@ class CalendarService():
 					self.create_custom_calendar([p.id for p in projects])
 					break
 
-	def update_calendar(self):
+	def update_calendar(self, force_update=False) -> list:
 		# Fetch projects from notion calendar
 		projects = self.data_source.fetch_projects()
 		logger.debug(f"Fetched {len(projects)} projects from Notion database")
 		# Identify outdated or missing projects and fetch just those 
-		outdated_projects, data = self.update_projects(projects)
+		outdated_projects, data = self.update_projects(projects, force_update)
 		assert len(outdated_projects) + len(data) == len(projects)
 		data += outdated_projects
 		self.last_update = datetime.now()

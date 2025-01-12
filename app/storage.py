@@ -25,6 +25,8 @@ class ProjectRepository(StorageInterface):
 		Note:
 			Changes are committed to the database after all projects have been processed.
 		"""
+		if not self.exists():
+			self.db.create_all()
 		for project_dto in data:
 			project = self.get_by_id(project_dto.id)
 			if project:

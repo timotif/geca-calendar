@@ -24,7 +24,7 @@ class NotionDatabaseReader(NotionReader, DataSourceInterface):
 		self.url = f"https://api.notion.com/v1/databases/{database_id}/query"
 
 	def fetch_data(self) -> list[dict]:
-		logger.debug("Fetching data from database")
+		logger.debug("Fetching data from Notion database")
 		response = requests.request("POST", self.url, headers=self.headers)
 		data = response.json()
 		logger.debug(f"Status code: {response.status_code}")
