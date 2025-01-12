@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Error{% endblock %}
+{% block content %}
+<style>
+.error-page {
+  text-align: center;
+  margin-top: 60px;
+}
+.error-container {
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 15px;
+  padding: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.error-container h1 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+.error-container p {
+  font-size: 1.2rem;
+  background-color: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: white;
+    padding: 1rem;
+    border-radius: 8px;
+}
+</style>
+<div class="error-page">
+  {% block error_content %}{% endblock %}
+</div>
+{% endblock %}

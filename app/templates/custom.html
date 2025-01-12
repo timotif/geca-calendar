@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Custom Calendar{% endblock %}
+
+{% block content %}
+<div class="subscription-container">
+    <h1 class="mb-4">Calendar Subscription</h1>
+    
+    <div class="calendar-info">
+        <p class="lead mb-4">Your custom calendar has been created! Here's how to subscribe:</p>
+        
+		<div class="url-container">
+			<label for="calendar-url" class="h5 mb-3">Calendar URL:</label>
+			<div class="input-group">
+				<input type="text" 
+					   id="calendar-url" 
+					   class="form-control" 
+					   value="{{ url }}" 
+					   readonly>
+				<div class="input-group-append">
+					<button class="btn btn-primary px-4" 
+							onclick="copyUrl()" 
+							id="copy-button">
+						Copy URL
+					</button>
+				</div>
+			</div>
+		</div>
+
+        <div class="mt-4 instructions">
+            <h5>Instructions:</h5>
+            <ol>
+                <li>Copy the URL above</li>
+                <li>Open your calendar application</li>
+                <li>Look for "Add Calendar" or "Subscribe to Calendar"</li>
+                <li>Paste the URL when prompted</li>
+            </ol>
+        </div>
+    </div>
+</div>
+{% endblock %}

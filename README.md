@@ -1,11 +1,40 @@
-# GECA Calendar
+# GECA Calendar v2.0
 This is a Python dockerized webapp that handles a subscription calendar for [Geneva Camerata](https://genevacamerata.com/en) events
 
-## Features
+## Screenshots
+### Main Calendar View
 
-- Fetch calendar data from Notion
-- Subscribe to calendar
+### Project Management
+
+## Features
+- Fetch and sync calendar data from Notion
+- Subscribe to calendar (public and private URLs)
 - Save calendars locally in ICS format
+- Generate customized calendars based on project selection
+- Track data changes to minimize API calls
+- Support for seating arrangements and project URLs
+- Responsive web interface
+
+## What's new in v2.0
+- **Interactive web interface for calendar customization**
+  - Select between full or custom calendar
+![Main Page](screenshots/main_page.png)
+  - Visual project cards with dates and details
+  - Real-time selection and filtering
+![Project Page](screenshots/projects_page.gif)
+  - Mobile-friendly design
+- **Enhanced calendar management**
+  - Custom calendar generation with selected projects
+  - ICS format support for local saving
+  - Real-time updates and sync
+- **Improved backend architecture**
+  - Fully rewritten with modern Python practices
+  - SQLite database for persistent storage
+  - Smart sync with modification tracking
+  - Object-oriented architecture with DTOs
+  - Modular design for maintainability
+  - Robust error handling and validation
+  - Docker containerization
 
 ## Getting Started
 
@@ -13,8 +42,10 @@ This is a Python dockerized webapp that handles a subscription calendar for [Gen
 
 - Python 3.x
 - Notion API token
+- SQLite3
 - *(For local mode)* Virtual environment (venv)
 - .env file (see env_template)
+- Docker (optional for containerized deployment)
 
 ### Create Notion integration token
 - Settings and members
@@ -56,6 +87,14 @@ The app will be available at http://localhost:8001 (can be changed in the Makefi
 ### Hosting
 - You can host the app on a server and expose the port 8001
 
+### Custom calendar mode
+- Go to the _/list_ page of the web app
+- You'll see a list of all the projects
+- Select the projects you want to include in the calendar
+- Click on the Submit button
+- An address will be created for your specific calendar
+- Subscribe to that address (see below)
+
 #### Subscribing to a Calendar
 - *iCal*
   1. Click on **New Calendar** -> **Add subscribed calendar**
@@ -80,7 +119,7 @@ make fclean
    python3 -m venv venv
    source venv/bin/activate
    pip install --upgrade pip
-   pip install -r geca_calendar/requirements.txt
+   pip install -r app/requirements.txt
    ```
 
 2. **Run the update script**:
@@ -88,7 +127,7 @@ make fclean
    ./update_calendar.sh
    ```
 
-The calendar file in ICS format will be saved in the root folder.
+The calendar file in ICS format will be saved in the _calendars_ subfolder.
 
 ## Help
 

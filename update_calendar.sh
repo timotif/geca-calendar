@@ -1,9 +1,9 @@
 #!/bin/bash
-CALENDAR_PATH=geca_calendar
+CALENDAR_MODULE=app
 
 # Load environment variables from .env file
 if [ -f .env ]; then
     export $(cat .env | xargs)
 fi
 
-python ${CALENDAR_PATH}/calendar_updater.py
+python ${CALENDAR_MODULE}/calendar_updater.py

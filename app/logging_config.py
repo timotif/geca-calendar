@@ -1,6 +1,9 @@
 import logging
 import os
 
+# TODO: Add log rotation
+# TODO: Integrate with config.py
+
 LOG_DIR = './log'
 
 if not os.path.exists(LOG_DIR):
@@ -25,5 +28,3 @@ logger.setLevel(logger_level)
 # Add handlers to the logger
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
-
-logger.info("Application started")
