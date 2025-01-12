@@ -33,10 +33,10 @@ def fetch_projects():
 
 @calendar.route("/projects", methods=["GET", "POST"])
 def custom_calendar():
-	if request.method == "GET":
-		return render_template("projects.html")
-	# POST method
 	try:
+		if request.method == "GET":
+			return render_template("projects.html")
+		# POST method
 		calendar_file = current_app.calendar.create_custom_calendar(request.form.getlist('selected_projects'))
 		if calendar_file:
 			full_url = url_for("calendar.get_custom_calendar", filename=calendar_file, _scheme='https', _external=True)
@@ -45,6 +45,7 @@ def custom_calendar():
 	except Exception as e:
 		logger.error(e)
 		return internal_error()
+
 @calendar.route("/<path:filename>")
 def get_custom_calendar(filename):
 	if not filename.endswith(".ics"):
