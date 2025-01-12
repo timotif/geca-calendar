@@ -3,10 +3,14 @@ from datetime import datetime
 from interfaces import StorageInterface
 from models import ProjectDb, CalendarHash
 from data_transfer_objects import ProjectDTO
+from pathlib import Path
 
 class ProjectRepository(StorageInterface):
 	def __init__(self, db: SQLAlchemy):
 		self.db = db
+
+	def exists(self) -> bool:
+		return Path(self.db.engine.url.database).exists()
 
 	def save(self, data: list[dict]):
 		"""
