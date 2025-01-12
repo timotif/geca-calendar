@@ -1,11 +1,6 @@
 # GECA Calendar v2.0
 This is a Python dockerized webapp that handles a subscription calendar for [Geneva Camerata](https://genevacamerata.com/en) events
 
-## Screenshots
-### Main Calendar View
-
-### Project Management
-
 ## Features
 - Fetch and sync calendar data from Notion
 - Subscribe to calendar (public and private URLs)
