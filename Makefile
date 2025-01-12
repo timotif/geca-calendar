@@ -39,6 +39,11 @@ reset-migrations:
 	@rm -rf $(APP_PATH)/migrations
 	@make init-db -s
 
+force-db-update:
+	@echo "Forcing database update..."
+	@echo "Make sure that the container is running"
+	@docker exec $(NAME) echo "app.calendar.update_calendar(force_update=True)" | flask shell
+
 clean:
 	@docker stop $(NAME)
 	@docker rm $(NAME)
@@ -65,8 +70,9 @@ help:
 	@echo "init-db: create the database and apply the migrations"
 	@echo "migrate: create and apply a new migration"
 	@echo "reset-migrations: remove the migrations and create a new database"
+	@echo "force-db-update: force the update of the database"
 	@echo "clean: stop and remove the docker container"
 	@echo "fclean: stop and remove the docker container and remove the docker image"
 	@echo "help: show this message"
 
-.PHONY: build run stop clean fclean help
+.PHONY: build run stop shell logs logs-follow init-db migrate reset-migrations force-db-update clean fclean help

@@ -49,6 +49,8 @@ class CalendarService():
 		return self.database_exists() and project_db and project_db.last_edited >= last_edited
 
 	def update_projects(self, projects: list, force_update=False) -> tuple[list, list]:	
+		if force_update:
+			logger.info("Forcing update on all projects")
 		updated_projects = []
 		fetched_projects = []
 		for p in projects:
