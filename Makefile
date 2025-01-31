@@ -63,6 +63,7 @@ logs-follow:
 help:
 	@echo "build: build the docker image"
 	@echo "run: run the docker container"
+	@echo "update: force update the calendar"
 	@echo "stop: stop the docker container"
 	@echo "shell: open a shell in the docker container"
 	@echo "logs: show the logs of the docker container"
@@ -75,4 +76,7 @@ help:
 	@echo "fclean: stop and remove the docker container and remove the docker image"
 	@echo "help: show this message"
 
-.PHONY: build run stop shell logs logs-follow init-db migrate reset-migrations force-db-update clean fclean help
+update:
+	@docker exec $(NAME) /bin/bash -c "python calendar_updater.py"
+
+.PHONY: build run stop shell logs logs-follow init-db migrate reset-migrations force-db-update clean fclean help update
