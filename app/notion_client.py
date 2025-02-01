@@ -91,27 +91,23 @@ class NotionDataSource(DataSourceInterface):
 		while block and not self.__is_divider(block):
 			try:
 				key = block['child_page']['title']
+				value = block['id']
+				logger.debug(f"Adding seating to {key} with id {value}")
+				seating[key] = NotionBlockChildrenReader(self.token, value).fetch_data()
 			except KeyError as e:
 				if e.args[0] == 'child_page':
-					logger.debug("Empty block found")
-			value = block['id']
-			logger.debug(f"Adding seating to {key} with id {value}")
-			seating[key] = NotionBlockChildrenReader(self.token, value).fetch_data()
+					logger.debug("No child page found")
 			block = next(blocks, None)
 		return seating
 
 	def __parse_seating(self, data: list[dict]) -> str:
-		if len(data) == 0 :
+		if not data or len(data) == 0 :
 			return "Seating positions: TBD"
 		seating = ""
 		for repertoire in data:
 			seating += f"{repertoire}\n"
 			for block in data[repertoire]:
-				type = block['type']
-				if type == 'paragraph' and len(block['paragraph']['rich_text']) != 0:
-					text = "\n".join([t['plain_text'] for t in block['paragraph']['rich_text']])
-					seating += text + "\n" # Section list
-			seating += "\n"
+				seating += self.__extract_text_from_block(block, "\n") + "\n"
 		return seating
 	
 	def __extract_seating_from_blocks(self, project_blocks: list[dict]) -> dict:
@@ -152,22 +148,30 @@ class NotionDataSource(DataSourceInterface):
 		# Discarding timezone info to allow comparison with location naive datetime in ProjectService.__is_project_up_to_date
 		return last_edited_utc.astimezone(local_tz).replace(tzinfo=None)
 	
+	def __extract_text_from_block(self, block: dict, divider: str=" ") -> str:
+		"""
+		Extracts and concatenates plain text from a Notion block's rich text content.
+		Args:
+			block (dict): The Notion block from which to extract text.
+			divider (str, optional): The string to use as a separator between text elements. Defaults to a single space.
+		Returns:
+			str: The concatenated plain text from the block's rich text content. Returns an empty string if the block does not contain rich text.
+		"""
+		type = block['type']
+		try:
+			return divider.join([t['plain_text'] for t in block[type]['rich_text']])
+		except KeyError:
+			return ""
+
 	def __extract_repertoire_from_blocks(self, project_blocks: list[dict]) -> str:
 		repertoire = ""
 		blocks = iter(project_blocks)
 		for block in blocks:
 			if self.__is_repertoire_block(block):
-				type = block['type']
-				text = [t['plain_text'] for t in block[type]['rich_text']]
-				# Extract rep from blocks
-				repertoire = "\n".join(text) + "\n"
+				repertoire = self.__extract_text_from_block(block, "\n") + "\n"
 				block = next(blocks, None)
 				while block and not self.__is_divider(block):
-					type = block['type']
-					try:
-						repertoire += " ".join([t['plain_text'] for t in block[type]['rich_text'] if not self.__is_divider(block)]) + "\n"
-					except KeyError:
-						pass
+					repertoire += self.__extract_text_from_block(block) + "\n"
 					block = next(blocks, None)
 		return repertoire
 
