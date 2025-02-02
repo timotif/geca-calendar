@@ -73,7 +73,18 @@ class NotionDataSource(DataSourceInterface):
 			(block['paragraph']['rich_text'][0]['plain_text'].lower() == "seating positions" or \
 			block['paragraph']['rich_text'][0]['plain_text'].lower() == "seating position")
 
-	def __is_repertoire_block(self, block: dict) -> bool: 
+	def __is_repertoire_block(self, block: dict) -> bool:
+		"""
+		Determines if a given block is a repertoire block.
+		A block is considered a repertoire block if:
+		- The block type is 'paragraph'.
+		- The paragraph contains rich text.
+		- The first rich text element's plain text (case insensitive) matches one of the repertoire headers.
+		Args:
+			block (dict): The block to check.
+		Returns:
+			bool: True if the block is a repertoire block, False otherwise.
+		"""
 		repertoire_headers = ["program", "programme", "programs", "repertoire"]
 		return block['type'] == 'paragraph' and \
 			len(block['paragraph']['rich_text']) != 0 and \
