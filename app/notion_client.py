@@ -91,6 +91,14 @@ class NotionDataSource(DataSourceInterface):
 			block['paragraph']['rich_text'][0]['plain_text'].lower() in repertoire_headers
 
 	def __is_divider(self, block: dict) -> bool: # TODO: error handling
+		"""
+		Checks if the given block is a divider.
+		Args:
+			block (dict): The block to check.
+		Returns:
+			bool: True if the block is a divider, False otherwise.
+		"""
+
 		return block['type'] == 'divider'
 
 	def __fetch_project_blocks(self, project: dict) -> list[dict]:
