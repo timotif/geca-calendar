@@ -6,6 +6,7 @@ import os
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 DIRECTORY = os.path.join(APP_ROOT, 'calendars')
 FILENAME = 'geca2425.ics'
+JSON_DUMP = 'data.json'
 UPDATE_EVERY = datetime.timedelta(hours=6)
 
 # TODO: remove in production

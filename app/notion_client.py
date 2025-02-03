@@ -5,6 +5,8 @@ from dateutil import tz
 from interfaces import DataSourceInterface
 from logging_config import logger
 from data_transfer_objects import ProjectDTO
+from config import JSON_DUMP
+import json
 
 class NotionReader():
 	"""Base class for Notion API readers"""
@@ -224,7 +226,7 @@ class NotionDataSource(DataSourceInterface):
 
 		return self.database_reader.fetch_data()
 
-	def fetch_data(self) -> list[ProjectDTO]:
+	def fetch_data(self, save=False) -> list[ProjectDTO]:
 		"""
 		Fetches and processes project data from Notion.
 		This method performs the following operations:
@@ -243,5 +245,9 @@ class NotionDataSource(DataSourceInterface):
 			return []
 		for project in projects_data:
 			self.fetch_project(project) # Enriches projects with blocks and seating
+		if save:
+			with open(JSON_DUMP, 'w') as f:
+				logger.info(f"Saving data to {JSON_DUMP}")
+				json.dump(projects_data, f, indent=4)
 		projects = [self.to_project_dto(project) for project in projects_data] # Convert to DTO
 		return projects

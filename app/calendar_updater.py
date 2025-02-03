@@ -13,7 +13,7 @@ def main():
 	try:
 		notion = NotionDataSource(os.getenv("NOTION_TOKEN"), os.getenv("NOTION_DB_ID"))
 		ics = ICSCalendarGenerator(os.path.join(DIRECTORY, FILENAME))
-		data = notion.fetch_data()
+		data = notion.fetch_data(os.getenv("DEBUG") == "1") # If debug mode is on, save data to JSON
 		ics.generate(data)
 		logger.info("Calendar updated")
 	except KeyboardInterrupt:
