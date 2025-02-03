@@ -7,6 +7,7 @@ This is a Python dockerized webapp that handles a subscription calendar for [Gen
 - Save calendars locally in ICS format
 - Generate customized calendars based on project selection
 - Track data changes to minimize API calls
+- Force update calling /update endpoint
 - Support for seating arrangements and project URLs
 - Responsive web interface
 
@@ -83,7 +84,7 @@ The app will be available at http://localhost:8001 (can be changed in the Makefi
 - You can host the app on a server and expose the port 8001
 
 ### Custom calendar mode
-- Go to the _/list_ page of the web app
+- Go to the _/projects_ page of the web app
 - You'll see a list of all the projects
 - Select the projects you want to include in the calendar
 - Click on the Submit button
