@@ -1,4 +1,4 @@
-from flask import Blueprint, current_app, render_template, send_from_directory, jsonify, request, url_for
+from flask import Blueprint, current_app, render_template, send_from_directory, jsonify, request, url_for, flash
 from config import DIRECTORY
 from logging_config import logger
 
@@ -20,6 +20,16 @@ def get_general_calendar():
 	except Exception as e:
 		logger.error(e)
 		return internal_error()
+
+@calendar.route("/update")
+def force_update():
+	try:
+		projects = current_app.calendar.update_calendar(force_update=True)
+		flash("Calendar updated successfully!", "success")
+	except Exception as e:
+		logger.error(e)
+		flash("Failed to update calendar.", "error")
+	return render_template("index.html")
 
 @calendar.route("/fetch_projects")
 def fetch_projects():

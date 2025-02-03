@@ -4,6 +4,17 @@
 
 {% block content %}
 <div class="welcome-container">
+	{% with messages = get_flashed_messages(with_categories=true) %}
+		{% if messages %}
+			<div class="alert-container">
+				{% for category, message in messages %}
+					<div class="alert alert-{{ category }}">
+						{{ message }}
+					</div>
+				{% endfor %}
+			</div>
+		{% endif %}
+	{% endwith %}
     <h1 class="mb-4">Welcome to GECA Calendar</h1>
     <div class="row">
         <div class="col-md-6 mb-4">
