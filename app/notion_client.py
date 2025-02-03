@@ -72,8 +72,8 @@ class NotionDataSource(DataSourceInterface):
 	def __is_seating_block(self, block: dict) -> bool: # TODO: error handling
 		return block['type'] == 'paragraph' and \
 			len(block['paragraph']['rich_text']) != 0 and \
-			(block['paragraph']['rich_text'][0]['plain_text'].lower() == "seating positions" or \
-			block['paragraph']['rich_text'][0]['plain_text'].lower() == "seating position")
+			(block['paragraph']['rich_text'][0]['plain_text'].strip().lower() == "seating positions" or \
+			block['paragraph']['rich_text'][0]['plain_text'].strip().lower() == "seating position")
 
 	def __is_repertoire_block(self, block: dict) -> bool:
 		"""
@@ -90,7 +90,7 @@ class NotionDataSource(DataSourceInterface):
 		repertoire_headers = ["program", "programme", "programs", "repertoire"]
 		return block['type'] == 'paragraph' and \
 			len(block['paragraph']['rich_text']) != 0 and \
-			block['paragraph']['rich_text'][0]['plain_text'].lower() in repertoire_headers
+			block['paragraph']['rich_text'][0]['plain_text'].split()[0].lower() in repertoire_headers
 
 	def __is_divider(self, block: dict) -> bool: # TODO: error handling
 		"""
