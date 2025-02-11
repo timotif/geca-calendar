@@ -25,6 +25,7 @@ def get_general_calendar():
 def force_update():
 	try:
 		projects = current_app.calendar.update_calendar(force_update=True)
+		dir, calendar_file = current_app.calendar.create_full_calendar()
 		flash("Calendar updated successfully!", "success")
 	except Exception as e:
 		logger.error(e)

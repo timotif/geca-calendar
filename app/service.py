@@ -104,7 +104,7 @@ class CalendarService():
 	
 	def create_full_calendar(self) -> tuple[str, str]:
 		path = os.path.join(self.directory, self.ics_handler.filename)
-		if not (self.is_calendar_up_to_date() or not os.path.exists(path)):
+		if not self.is_calendar_up_to_date() or not os.path.exists(path):
 			data = self.update_calendar()
 			self.ics_handler.generate(data, path)
 		return self.directory, self.ics_handler.filename
