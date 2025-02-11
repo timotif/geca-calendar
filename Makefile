@@ -5,6 +5,7 @@ APP_PATH = ./app
 ENV_FILE = .env
 DB_PATH = /var/lib/geca_calendar
 LOG_PATH = /var/log/geca_calendar
+CALENDARS_PATH = $(APP_PATH)/calendars
 
 all: help
 
@@ -18,6 +19,7 @@ run:
 	-p $(PORT):$(PORT) \
 	-v $(DB_PATH):/app/instance \
 	-v $(LOG_PATH):/app/log \
+	-v $(CALENDARS_PATH):/app/calendars \
 	--name $(NAME) $(IMG)
 
 stop:

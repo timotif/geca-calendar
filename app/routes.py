@@ -31,6 +31,16 @@ def force_update():
 		flash("Failed to update calendar.", "error")
 	return render_template("index.html")
 
+@calendar.route("/rebuild")
+def rebuild_custom_calendars():
+	try:
+		current_app.calendar.update_custom_calendars()
+		flash("Custom calendars rebuilt successfully!", "success")
+	except Exception as e:
+		logger.error(e)
+		flash("Failed to rebuild custom calendars.", "error")
+	return render_template("index.html")
+
 @calendar.route("/fetch_projects")
 def fetch_projects():
 	try:
@@ -63,7 +73,8 @@ def get_custom_calendar(filename):
 	try:
 		current_app.calendar.update_custom_calendars([filename[:-4]])
 		return send_from_directory(DIRECTORY, filename)
-	except FileNotFoundError:
+	except FileNotFoundError as e:
+		logger.error(e)
 		return page_not_found()
 	except Exception as e:
 		logger.error(e)
