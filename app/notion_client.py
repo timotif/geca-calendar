@@ -143,7 +143,8 @@ class NotionDataSource(DataSourceInterface):
 		return seating
 
 	def to_project_dto(self, project: dict) -> ProjectDTO:
-		return ProjectDTO(
+		try:
+			return ProjectDTO(
 			id = project['id'],
 			name = project['properties']['Name']['title'][0]['text']['content'],
 			date_start=project['properties']['Date']['date']['start'],
@@ -152,6 +153,8 @@ class NotionDataSource(DataSourceInterface):
 			repertoire=project.get('repertoire'),
 			seating=self.__parse_seating(project.get('seating'))
 		)
+		except Exception as e:
+			logger.error(f"Error converting project to DTO: {e}")
 	
 	def project_last_updated(self, project: dict):
 		"""
@@ -249,5 +252,5 @@ class NotionDataSource(DataSourceInterface):
 			with open(JSON_DUMP, 'w') as f:
 				logger.info(f"Saving data to {JSON_DUMP}")
 				json.dump(projects_data, f, indent=4)
-		projects = [self.to_project_dto(project) for project in projects_data] # Convert to DTO
+		projects = [dto for project in projects_data if (dto := self.to_project_dto(project) is not None)] # Convert to DTO
 		return projects

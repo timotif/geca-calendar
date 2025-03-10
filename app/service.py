@@ -56,7 +56,9 @@ class CalendarService():
 		for p in projects:
 			if force_update or not self.__is_project_up_to_date(p):
 				self.data_source.fetch_project(p)
-				updated_projects.append(self.data_source.to_project_dto(p))
+				if not (project_dto := self.data_source.to_project_dto(p)):
+					continue
+				updated_projects.append(project_dto)
 			else:
 				fetched_projects.append(self.db.get_by_id(p['id']).to_project_dto())
 		# Save updated projects to database
@@ -90,7 +92,7 @@ class CalendarService():
 		logger.debug(f"Fetched {len(projects)} projects from Notion database")
 		# Identify outdated or missing projects and fetch just those 
 		outdated_projects, data = self.update_projects(projects, force_update)
-		assert len(outdated_projects) + len(data) == len(projects)
+		# assert len(outdated_projects) + len(data) == len(projects) # Deleting assertion because invalid projects can be skipped
 		data += outdated_projects
 		self.last_update = datetime.now()
 		return data
