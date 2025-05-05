@@ -155,7 +155,7 @@ class NotionDataSource(DataSourceInterface):
 		)
 		except Exception as e:
 			logger.error(f"Error converting project to DTO: {e}")
-	
+			return None
 	def project_last_updated(self, project: dict):
 		"""
 		Convert project's last edited time from UTC to local timezone.
