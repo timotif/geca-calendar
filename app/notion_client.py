@@ -7,6 +7,7 @@ from logging_config import logger
 from data_transfer_objects import ProjectDTO
 from config import JSON_DUMP
 import json
+import concurrent.futures
 
 class NotionReader():
 	"""Base class for Notion API readers"""
@@ -106,6 +107,46 @@ class NotionDataSource(DataSourceInterface):
 	def __fetch_project_blocks(self, project: dict) -> list[dict]:
 		return NotionBlockChildrenReader(self.token, project['id']).fetch_data()
 	
+	def __process_seating_section_parallel(self, blocks: iter) -> dict:
+		"""Processes the seating section of a project in parallel."""
+		seating = {}
+		child_pages = []
+		
+		# Collect all child pages that need API calls
+		block = next(blocks, None)
+		while block and not self.__is_divider(block):
+			try:
+				title = block['child_page']['title']
+				id = block['id']
+				logger.debug(f"Adding seating to {title} with id {id}")
+				child_pages.append((title, id))
+				# seating[key] = NotionBlockChildrenReader(self.token, value).fetch_data()
+			except KeyError as e:
+				if e.args[0] == 'child_page':
+					logger.debug("No child page found")
+			block = next(blocks, None)
+		
+		# Fetch all child pages in parallel
+		if not child_pages:
+			return seating
+		with concurrent.futures.ThreadPoolExecutor(max_workers=16) as executor:
+			# Create a dict of the futures
+			future_to_key = {
+				executor.submit(NotionBlockChildrenReader(self.token, id).fetch_data): title
+				for title, id in child_pages
+			}
+			logger.debug(f"Futures: {future_to_key}")
+			# Process the results as they complete
+			for future in concurrent.futures.as_completed(future_to_key):
+				# logger.debug(f"Future: {future}")
+				title = future_to_key[future]
+				try:
+					seating[title] = future.result()
+					logger.debug(f"Seating for {title} fetched successfully")
+				except Exception as e:
+					logger.error(f"Error fetching seating for {title}: {e}")
+		return seating
+	
 	def __process_seating_section(self, blocks: iter) -> dict:
 		seating = {}
 		block = next(blocks, None)
@@ -138,7 +179,7 @@ class NotionDataSource(DataSourceInterface):
 			if self.__is_seating_block(block):
 				logger.debug("Seating positions found")
 				# Seating is set up
-				seating = self.__process_seating_section(blocks)
+				seating = self.__process_seating_section_parallel(blocks)
 				break
 		return seating
 
@@ -213,7 +254,6 @@ class NotionDataSource(DataSourceInterface):
 				- 'repertoire': Repertoire information extracted from blocks
 				- 'seating': Seating information extracted from blocks
 		"""
-
 		project['blocks'] = self.__fetch_project_blocks(project) # Blocks in project
 		project['repertoire'] = self.__extract_repertoire_from_blocks(project['blocks']) # Parse blocks to find repertoire
 		project['seating'] = self.__extract_seating_from_blocks(project['blocks']) # Parse blocks to find seating
@@ -246,8 +286,12 @@ class NotionDataSource(DataSourceInterface):
 		if not projects_data:
 			logger.error("No projects found")
 			return []
-		for project in projects_data:
-			self.fetch_project(project) # Enriches projects with blocks and seating
+		# for project in projects_data:
+		# 	self.fetch_project(project) # Enriches projects with blocks and seating
+
+		# Process projects in parallel
+		with concurrent.futures.ThreadPoolExecutor(max_workers=16) as executor:
+			executor.map(self.fetch_project, projects_data)
 		if save:
 			with open(JSON_DUMP, 'w') as f:
 				logger.info(f"Saving data to {JSON_DUMP}")
