@@ -252,5 +252,5 @@ class NotionDataSource(DataSourceInterface):
 			with open(JSON_DUMP, 'w') as f:
 				logger.info(f"Saving data to {JSON_DUMP}")
 				json.dump(projects_data, f, indent=4)
-		projects = [dto for project in projects_data if (dto := self.to_project_dto(project) is not None)] # Convert to DTO
+		projects = [dto for project in projects_data if (dto := self.to_project_dto(project)) is not None] # Convert to DTO
 		return projects
