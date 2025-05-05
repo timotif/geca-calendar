@@ -17,4 +17,4 @@ WORKDIR /app
 ARG PORT=8001
 ENV PORT=${PORT}
 
-CMD ["sh", "-c", "gunicorn -b 0.0.0.0:${PORT} app:app"]
+CMD ["sh", "-c", "gunicorn -b 0.0.0.0:${PORT} --timeout 120 app:app"]

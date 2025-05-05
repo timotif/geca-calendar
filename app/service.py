@@ -56,7 +56,9 @@ class CalendarService():
 		for p in projects:
 			if force_update or not self.__is_project_up_to_date(p):
 				self.data_source.fetch_project(p)
-				updated_projects.append(self.data_source.to_project_dto(p))
+				if not (project_dto := self.data_source.to_project_dto(p)):
+					continue
+				updated_projects.append(project_dto)
 			else:
 				fetched_projects.append(self.db.get_by_id(p['id']).to_project_dto())
 		# Save updated projects to database
@@ -70,7 +72,8 @@ class CalendarService():
 		# If no specific hash is passed, update all custom
 		custom_calendars = self.db.get_all_hashes() if not hashes \
 			else [self.db.get_by_hash(hash) for hash in hashes]
-		if custom_calendars[0] == None:
+		logger.debug(f"Updating custom calendars: {custom_calendars}")
+		if not custom_calendars or custom_calendars[0] == None:
 			raise ValueError(f"No custom calendars found: {hashes}")
 		for hash in custom_calendars:
 			projects = self.db.get_projects_by_hash(hash.hash)
@@ -89,7 +92,7 @@ class CalendarService():
 		logger.debug(f"Fetched {len(projects)} projects from Notion database")
 		# Identify outdated or missing projects and fetch just those 
 		outdated_projects, data = self.update_projects(projects, force_update)
-		assert len(outdated_projects) + len(data) == len(projects)
+		# assert len(outdated_projects) + len(data) == len(projects) # Deleting assertion because invalid projects can be skipped
 		data += outdated_projects
 		self.last_update = datetime.now()
 		return data
@@ -103,7 +106,7 @@ class CalendarService():
 	
 	def create_full_calendar(self) -> tuple[str, str]:
 		path = os.path.join(self.directory, self.ics_handler.filename)
-		if not (self.is_calendar_up_to_date() or not os.path.exists(path)):
+		if not self.is_calendar_up_to_date() or not os.path.exists(path):
 			data = self.update_calendar()
 			self.ics_handler.generate(data, path)
 		return self.directory, self.ics_handler.filename
