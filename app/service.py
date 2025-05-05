@@ -132,6 +132,7 @@ class CalendarService():
 		hash_base64 = base64.urlsafe_b64encode(hashed.digest())
 		return hash_base64.decode()[:8]
 	
+	@timer
 	def create_full_calendar(self) -> tuple[str, str]:
 		path = os.path.join(self.directory, self.ics_handler.filename)
 		if not self.is_calendar_up_to_date() or not os.path.exists(path):
