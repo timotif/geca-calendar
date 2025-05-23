@@ -32,6 +32,16 @@ This is a Python dockerized webapp that handles a subscription calendar for [Gen
   - Robust error handling and validation
   - Docker containerization
 
+## What's new in v2.1
+- **Parallelized Data Fetching**
+  - Improved performance by introducing parallelization when fetching data from Notion.
+  - Significantly reduces the time required to sync large datasets.
+
+- **Enhanced Logging System**
+  - More granular and component-specific logging for better debugging and monitoring.
+  - Each module now logs with its own identifier (e.g., `[notion_client]`, `[calendar_service]`).
+  - Improved log formatting and rotation for easier log management.
+
 ## Getting Started
 
 ### Prerequisites
