@@ -3,7 +3,7 @@ from datetime import timezone
 import dateutil.parser
 from dateutil import tz
 from interfaces import DataSourceInterface
-from logging_config import logger
+from logging_config import notion_logger as logger
 from data_transfer_objects import ProjectDTO
 from config import JSON_DUMP, PARALLEL_FETCH
 import json

@@ -1,6 +1,6 @@
 from ics import Calendar, Event
 from interfaces import CalendarGeneratorInterface
-from logging_config import logger
+from logging_config import calendar_generator_logger as logger
 from config import FILENAME
 
 class ICSCalendarGenerator(CalendarGeneratorInterface):

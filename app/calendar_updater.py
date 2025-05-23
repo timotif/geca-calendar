@@ -1,6 +1,6 @@
 import os
 import dotenv
-from logging_config import logger
+from logging_config import app_logger as logger
 from notion_client import NotionDataSource
 from calendar_generator import ICSCalendarGenerator
 from config import DIRECTORY, FILENAME

@@ -3,7 +3,7 @@ from datetime import datetime
 import hashlib
 import base64
 from config import UPDATE_EVERY, DIRECTORY, PARALLEL_FETCH
-from logging_config import logger
+from logging_config import calendar_service_logger as logger
 import concurrent.futures
 from utils import timer
 

@@ -7,7 +7,7 @@ from notion_client import NotionDataSource
 from storage import ProjectRepository
 from calendar_generator import ICSCalendarGenerator
 from service import CalendarService
-from logging_config import logger
+from logging_config import setup_logging
 
 def create_app(config=None):
 	"""
@@ -35,6 +35,11 @@ def create_app(config=None):
 		app.config.from_object(config)
 		validate_config(config)
 
+		# Setup logging
+		setup_logging(app.config["DEBUG"])
+		from logging_config import app_logger as logger
+		logger.debug("Logging setup complete")
+
 		# Get database
 		db = get_db(app)
 
@@ -54,11 +59,15 @@ def create_app(config=None):
 			notion, repo, ics
 		)
 
+		# Welcome message
 		logger.info("Application started")
 		return app
 	
 	except ConfigError as e:
-		logger.error(f"Configuration error: {e}")
+		# Use basic logging since setup_logging might have failed
+		import logging
+		logging.basicConfig(level=logging.ERROR)
+		logging.error(f"Configuration error: {e}")
 		sys.exit(1)
 
 app = create_app()

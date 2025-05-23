@@ -1,6 +1,6 @@
 from flask import Blueprint, current_app, render_template, send_from_directory, jsonify, request, url_for, flash
 from config import DIRECTORY
-from logging_config import logger
+from logging_config import app_logger as logger
 
 calendar = Blueprint("calendar", __name__)
 
