@@ -18,8 +18,6 @@ def setup_logging(debug_mode=False):
 		backupCount=5
 	)
 
-	# logger = logging.getLogger("geca_calendar")
-
 	# Create handlers
 	file_handler = logging.FileHandler(LOG_FILE)
 	stream_handler = logging.StreamHandler()
@@ -31,11 +29,10 @@ def setup_logging(debug_mode=False):
 
 	# Dynamically setting logger level
 	logger_level = logging.DEBUG if debug_mode else logging.INFO
-	# logger.setLevel(logger_level)
 
 	# Component loggers with their config levels
 	loggers_config = {
-		"geca_calendar_app": logger_level,
+		"geca_calendar": logger_level,
 		"calendar_service": logger_level,
 		"calendar_generator": logger_level,
 		"notion_client": logger_level,
@@ -50,7 +47,11 @@ def setup_logging(debug_mode=False):
 		logger.addHandler(file_handler)
 		logger.addHandler(stream_handler)
 
-app_logger = logging.getLogger("geca_calendar_app")
+# Call setup_logging to initialize logging
+setup_logging()
+
+# Generate loggers for different components with default setup
+app_logger = logging.getLogger("geca_calendar")
 notion_logger = logging.getLogger("notion_client")
 calendar_generator_logger = logging.getLogger("calendar_generator")
 calendar_service_logger = logging.getLogger("calendar_service")
