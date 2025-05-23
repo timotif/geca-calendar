@@ -10,10 +10,16 @@ JSON_DUMP = 'data.json'
 UPDATE_EVERY = datetime.timedelta(hours=6)
 PARALLEL_FETCH = True
 
-# TODO: remove in production
-import dotenv
-ENV_FILE = "../.env"
-env = dotenv.load_dotenv(ENV_FILE)
+# Load environment variables for local development
+# In production, environment variables are passed directly to the container
+try:
+	import dotenv
+	ENV_FILE = "../.env"
+	env = dotenv.load_dotenv(ENV_FILE)
+except ImportError:
+	# If dotenv is not available, we assume it's running in production
+	# and the environment variables are already set
+	pass
 
 class ConfigError(Exception):
 	pass
