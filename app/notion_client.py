@@ -28,10 +28,9 @@ class NotionDatabaseReader(NotionReader, DataSourceInterface):
 		self.url = f"https://api.notion.com/v1/databases/{database_id}/query"
 
 	def fetch_data(self) -> list[dict]:
-		logger.debug("Fetching data from Notion database")
 		response = requests.request("POST", self.url, headers=self.headers)
 		data = response.json()
-		logger.debug(f"Status code: {response.status_code}")
+		logger.debug(f"Fetching data from Notion database. Status code: {response.status_code}")
 		return data.get('results', [])
 
 class NotionBlockChildrenReader(NotionReader, DataSourceInterface):
@@ -43,10 +42,9 @@ class NotionBlockChildrenReader(NotionReader, DataSourceInterface):
 		self.url = f"https://api.notion.com/v1/blocks/{page_id}/children"
 
 	def fetch_data(self) -> list[dict]:
-		logger.debug("Fetching data from block")
 		response = requests.request("GET", self.url, headers=self.headers)
 		data = response.json()
-		logger.debug(f"Status code: {response.status_code}")
+		logger.debug(f"Fetching data from block. Status code: {response.status_code}")
 		return data.get('results', [])
 
 class NotionDataSource(DataSourceInterface):
