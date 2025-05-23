@@ -8,6 +8,7 @@ DIRECTORY = os.path.join(APP_ROOT, 'calendars')
 FILENAME = 'geca2425.ics'
 JSON_DUMP = 'data.json'
 UPDATE_EVERY = datetime.timedelta(hours=6)
+PARALLEL_FETCH = True
 
 # TODO: remove in production
 import dotenv

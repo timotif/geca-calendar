@@ -5,7 +5,7 @@ from dateutil import tz
 from interfaces import DataSourceInterface
 from logging_config import logger
 from data_transfer_objects import ProjectDTO
-from config import JSON_DUMP
+from config import JSON_DUMP, PARALLEL_FETCH
 import json
 import concurrent.futures
 from utils import timer
@@ -108,6 +108,13 @@ class NotionDataSource(DataSourceInterface):
 	def __fetch_project_blocks(self, project: dict) -> list[dict]:
 		return NotionBlockChildrenReader(self.token, project['id']).fetch_data()
 	
+	def __process_seating_section(self, blocks: iter) -> dict:
+		"""Processes the seating section of a project."""
+		if PARALLEL_FETCH:
+			return self.__process_seating_section_parallel(blocks)
+		else:
+			return self.__process_seating_section_legacy(blocks)
+
 	def __process_seating_section_parallel(self, blocks: iter) -> dict:
 		"""Processes the seating section of a project in parallel."""
 		seating = {}
@@ -119,7 +126,7 @@ class NotionDataSource(DataSourceInterface):
 			try:
 				title = block['child_page']['title']
 				id = block['id']
-				logger.debug(f"Adding seating to {title} with id {id}")
+				logger.debug(f"Adding seating to {title} with id {id} (parallel mode)")
 				child_pages.append((title, id))
 				# seating[key] = NotionBlockChildrenReader(self.token, value).fetch_data()
 			except KeyError as e:
@@ -147,14 +154,18 @@ class NotionDataSource(DataSourceInterface):
 					logger.error(f"Error fetching seating for {title}: {e}")
 		return seating
 	
-	def __process_seating_section(self, blocks: iter) -> dict:
+	def __process_seating_section_legacy(self, blocks: iter) -> dict:
+		"""
+		Legacy sequential implementation of seating section processing.
+		This method will be removed in the future.
+		"""
 		seating = {}
 		block = next(blocks, None)
 		while block and not self.__is_divider(block):
 			try:
 				key = block['child_page']['title']
 				value = block['id']
-				logger.debug(f"Adding seating to {key} with id {value}")
+				logger.debug(f"Adding seating to {key} with id {value} (legacy mode)")
 				seating[key] = NotionBlockChildrenReader(self.token, value).fetch_data()
 			except KeyError as e:
 				if e.args[0] == 'child_page':
@@ -179,7 +190,7 @@ class NotionDataSource(DataSourceInterface):
 			if self.__is_seating_block(block):
 				logger.debug("Seating positions found")
 				# Seating is set up
-				seating = self.__process_seating_section_parallel(blocks)
+				seating = self.__process_seating_section(blocks)
 				break
 		return seating
 

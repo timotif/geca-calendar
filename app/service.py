@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 import hashlib
 import base64
-from config import UPDATE_EVERY, DIRECTORY
+from config import UPDATE_EVERY, DIRECTORY, PARALLEL_FETCH
 from logging_config import logger
 import concurrent.futures
 from utils import timer
@@ -50,10 +50,16 @@ class CalendarService():
 		project_db = self.db.get_by_id(project['id'])
 		return self.database_exists() and project_db and project_db.last_edited >= last_edited
 
+	def update_projects(self, projects: list, force_update=False) -> tuple[list, list]:
+		if PARALLEL_FETCH:
+			return self.update_projects_parallel(projects, force_update)
+		else:
+			return self.update_projects_legacy(projects, force_update)
+
 	@timer
 	def update_projects_parallel(self, projects: list, force_update=False) -> tuple[list, list]:
 		if force_update:
-			logger.info("Forcing update on all projects")
+			logger.info("Forcing parallel update on all projects")
 		projects_to_update = []
 		projects_fetched = []
 		projects_updated = []
@@ -76,9 +82,13 @@ class CalendarService():
 		return projects_updated, projects_fetched
 
 	@timer
-	def update_projects(self, projects: list, force_update=False) -> tuple[list, list]:	
+	def update_projects_legacy(self, projects: list, force_update=False) -> tuple[list, list]:
+		"""
+		Legacy sequential implementation - preserved for reference
+		This method will be removed in the future
+		"""
 		if force_update:
-			logger.info("Forcing update on all projects")
+			logger.info("Forcing sequential update on all projects")
 		updated_projects = []
 		fetched_projects = []
 		for p in projects:
@@ -119,7 +129,7 @@ class CalendarService():
 		projects = self.data_source.fetch_projects()
 		logger.debug(f"Fetched {len(projects)} projects from Notion database")
 		# Identify outdated or missing projects and fetch just those 
-		outdated_projects, data = self.update_projects_parallel(projects, force_update)
+		outdated_projects, data = self.update_projects(projects, force_update)
 		# assert len(outdated_projects) + len(data) == len(projects) # Deleting assertion because invalid projects can be skipped
 		data += outdated_projects
 		self.last_update = datetime.now()
